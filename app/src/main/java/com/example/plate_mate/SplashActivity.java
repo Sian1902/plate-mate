@@ -1,49 +1,62 @@
 package com.example.plate_mate;
+import android.animation.Animator;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.model.KeyPath;
+
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class SplashActivity extends AppCompatActivity {
-
-    private static final int SPLASH_DURATION = 3000; // 3 seconds
-    private ProgressBar progressBar;
+    private Disposable splashDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Set the splash theme before calling super
         setTheme(R.style.Theme_PlateMate_Splash);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        progressBar = findViewById(R.id.progressBar);
+        LottieAnimationView blurAnimTop = findViewById(R.id.blurAnimationTop);
+        LottieAnimationView blurAnimBottom = findViewById(R.id.blurAnimationBottom);
+        LottieAnimationView progressBar = findViewById(R.id.lottieProgressBar);
 
-        // Start the fake loading progress animation
-        startLoadingAnimation();
+        int brandColor = ContextCompat.getColor(this, R.color.primary);
+        setupAnimation(blurAnimTop, brandColor);
+        setupAnimation(blurAnimBottom, brandColor);
+        setupAnimation(progressBar, brandColor);
 
-        // Transition to Main Activity after duration
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-            startActivity(intent);
-            finish(); // Close splash so back button doesn't return here
-        }, SPLASH_DURATION);
+        splashDisposable = Observable.timer(2, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> {
+                    Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    finish();
+                });
+
     }
-
-    private void startLoadingAnimation() {
-        // Simple runnable to increment progress
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            int progress = 0;
-            @Override
-            public void run() {
-                if (progress <= 100) {
-                    progressBar.setProgress(progress);
-                    progress++;
-                    handler.postDelayed(this, 20); // Adjust speed here
-                }
-            }
-        }, 100);
+    private void setupAnimation(LottieAnimationView anim, int brandColor){
+        anim.addValueCallback(
+                new KeyPath("**"),
+                LottieProperty.COLOR_FILTER,
+                frameInfo -> new PorterDuffColorFilter(brandColor, PorterDuff.Mode.SRC_ATOP)
+        );
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (splashDisposable != null && !splashDisposable.isDisposed()) {
+            splashDisposable.dispose();
+        }
     }
 }
