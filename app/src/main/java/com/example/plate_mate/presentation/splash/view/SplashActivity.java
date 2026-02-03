@@ -1,5 +1,4 @@
-package com.example.plate_mate;
-import android.animation.Animator;
+package com.example.plate_mate.presentation;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -10,6 +9,8 @@ import androidx.core.content.ContextCompat;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.model.KeyPath;
+import com.example.plate_mate.MainActivity;
+import com.example.plate_mate.R;
 
 import java.util.concurrent.TimeUnit;
 

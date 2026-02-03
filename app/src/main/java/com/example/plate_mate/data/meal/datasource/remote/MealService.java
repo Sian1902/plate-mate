@@ -1,4 +1,7 @@
-package com.example.plate_mate;
+package com.example.plate_mate.data.product.datasource.remote;
+
+import com.example.plate_mate.data.product.model.CategoryResponse;
+import com.example.plate_mate.data.product.model.MealResponse;
 
 import io.reactivex.rxjava3.core.Observable;
 import retrofit2.http.GET;
