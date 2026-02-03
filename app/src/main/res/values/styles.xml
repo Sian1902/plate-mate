@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base Theme -->
+    <style name="Theme.PlateMate" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorOnPrimary">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/status_bar_light</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="fontFamily">@font/plus_jakarta_sans</item>
+    </style>
+
+    <style name="Theme.PlateMate.Splash" parent="Theme.PlateMate">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/background</item>
+    </style>
+
+    <!-- Shape Appearances -->
+    <style name="ShapeAppearance.App.MediumComponent" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_radius_md</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Chip Styles -->
+    <style name="Widget.App.Chip.Filter" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="chipBackgroundColor">@color/chip_background</item>
+        <item name="chipCornerRadius">@dimen/corner_radius_sm</item>
+        <item name="chipMinHeight">@dimen/chip_height</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">@font/plus_jakarta_sans_medium</item>
+        <item name="chipIconTint">@color/text_primary</item>
+        <item name="chipIconVisible">true</item>
+    </style>
+
+    <style name="Widget.App.Chip.Filter.Active">
+        <item name="chipBackgroundColor">@color/primary</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:textColor">@color/background</item>
+        <item name="android:fontFamily">@font/plus_jakarta_sans_bold</item>
+        <item name="chipIconTint">@color/background</item>
+    </style>
+
+    <style name="Widget.App.Chip.Tag" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="chipBackgroundColor">@color/badge_background</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="chipCornerRadius">4dp</item>
+        <item name="chipMinHeight">20dp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">@font/plus_jakarta_sans_medium</item>
+        <item name="chipStartPadding">6dp</item>
+        <item name="chipEndPadding">6dp</item>
+        <item name="closeIconVisible">false</item>
+    </style>
+
+    <!-- Bottom Navigation Text Appearances -->
+    <style name="TextAppearance.App.BottomNav.Active" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">@font/plus_jakarta_sans_bold</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
+    <style name="TextAppearance.App.BottomNav.Inactive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textSize">10sp</item>
+        <item name="android:fontFamily">@font/plus_jakarta_sans_medium</item>
+        <item name="android:textColor">@color/nav_inactive</item>
+    </style>
+</resources>
