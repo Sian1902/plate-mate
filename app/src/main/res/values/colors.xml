@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Primary Color -->
     <color name="primary">#13EC13</color>
+    <color name="primary_variant">#0FCE0F</color>
+
+    <!-- Light Mode Colors -->
     <color name="background">#F6F8F6</color>
-    <color name="text_headline">#111811</color>
-    <color name="text_tagline">#618961</color>
-    <color name="progress_track">#DBE6DB</color>
-    <color name="version_text">#66111811</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F1F5F1</color>
+
+    <!-- Text Colors - Light Mode -->
+    <color name="text_primary">#111811</color>
+    <color name="text_headline">#111811</color>      <!-- Same as text_primary for splash -->
+    <color name="text_tagline">#618961</color>        <!-- Same as text_secondary for splash -->
+    <color name="text_secondary">#618961</color>
+    <color name="text_tertiary">#64748B</color>
+    <color name="version_text">#64748B</color>        <!-- Same as text_tertiary for splash -->
+
+    <!-- Border Colors - Light Mode -->
+    <color name="border_light">#E5E7EB</color>
+    <color name="divider">#F9FAFB</color>
+
+    <!-- Chip/Badge Colors -->
+    <color name="chip_background">#E2E8F0</color>
+    <color name="badge_background">#E8F5E9</color>
+
+    <!-- Navigation Colors -->
+    <color name="nav_inactive">#9CA3AF</color>
+
+    <!-- Status Bar -->
+    <color name="status_bar_light">#FFFFFF</color>
+
+    <!-- Common Colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
 </resources>

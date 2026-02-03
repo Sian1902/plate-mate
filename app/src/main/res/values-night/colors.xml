@@ -1,7 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Primary Color (same in dark mode) -->
+    <color name="primary">#13EC13</color>
+    <color name="primary_variant">#0FCE0F</color>
+
+    <!-- Dark Mode Colors -->
     <color name="background">#102210</color>
-    <color name="text_headline">#FFFFFF</color>
-    <color name="text_tagline">#A1B8A1</color>
-    <color name="progress_track">#1AFFFFFF</color> <color name="version_text">#33FFFFFF</color>
+    <color name="surface">#1A2E1A</color>
+    <color name="surface_variant">#0F1D0F</color>
+
+    <!-- Text Colors - Dark Mode -->
+    <color name="text_primary">#F1F5F9</color>
+    <color name="text_headline">#F1F5F9</color>       <!-- Same as text_primary for splash -->
+    <color name="text_tagline">#94A3B8</color>         <!-- Same as text_secondary for splash -->
+    <color name="text_secondary">#94A3B8</color>
+    <color name="text_tertiary">#64748B</color>
+    <color name="version_text">#64748B</color>         <!-- Same as text_tertiary for splash -->
+
+    <!-- Border Colors - Dark Mode -->
+    <color name="border_light">#FFFFFF1A</color>
+    <color name="divider">#FFFFFF0D</color>
+
+    <!-- Chip/Badge Colors -->
+    <color name="chip_background">#1A2E1A</color>
+    <color name="badge_background">#1A2E1A</color>
+
+    <!-- Navigation Colors -->
+    <color name="nav_inactive">#64748B</color>
+
+    <!-- Status Bar -->
+    <color name="status_bar_light">#102210</color>
 </resources>
