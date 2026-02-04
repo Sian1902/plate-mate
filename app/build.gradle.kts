@@ -38,6 +38,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     testImplementation(libs.junit)
     implementation("com.airbnb.android:lottie:6.1.0")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")

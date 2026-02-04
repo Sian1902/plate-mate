@@ -48,4 +48,6 @@
     <string name="cd_theme_toggle">Toggle theme</string>
     <string name="cd_navigate_to_meal">Navigate to meal details</string>
     <string name="cd_add_meal">Add new meal</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

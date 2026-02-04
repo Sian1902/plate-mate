@@ -1,24 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base Theme -->
-    <style name="Theme.PlateMate" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_variant</item>
-        <item name="colorOnPrimary">@color/background</item>
-        <item name="colorSurface">@color/surface</item>
-        <item name="colorOnSurface">@color/text_primary</item>
-        <item name="android:colorBackground">@color/background</item>
-        <item name="android:statusBarColor">@color/status_bar_light</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:navigationBarColor">@color/surface</item>
-        <item name="fontFamily">@font/plus_jakarta_sans</item>
-    </style>
-
-    <style name="Theme.PlateMate.Splash" parent="Theme.PlateMate">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@color/background</item>
-    </style>
-
     <!-- Shape Appearances -->
     <style name="ShapeAppearance.App.MediumComponent" parent="">
         <item name="cornerFamily">rounded</item>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home"> <fragment
+    android:id="@+id/nav_home"
+    android:name="com.example.plate_mate.presentation.home.view.HomeFragment"
+    android:label="Home"
+    tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_planner"
+        android:name="com.example.plate_mate.presentation.planner.PlannerFragment"
+        android:label="Planner"
+        tools:layout="@layout/fragment_planner" />
+
+    <fragment
+        android:id="@+id/nav_saved"
+        android:name="com.example.plate_mate.presentation.saved.SavedFragment"
+        android:label="Saved"
+        tools:layout="@layout/fragment_saved" />
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.example.plate_mate.presentation.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+
+</navigation>

@@ -87,7 +87,7 @@
             <include
                 android:id="@+id/layoutHeroMeal"
                 layout="@layout/item_hero_meal" />
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -177,19 +177,5 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Bottom Navigation -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/bottom_nav_height"
-        android:layout_gravity="bottom"
-        android:background="@color/surface"
-        android:elevation="@dimen/elevation_lg"
-        app:itemIconSize="@dimen/bottom_nav_icon_size"
-        app:itemIconTint="@color/nav_item_color"
-        app:itemTextAppearanceActive="@style/TextAppearance.App.BottomNav.Active"
-        app:itemTextAppearanceInactive="@style/TextAppearance.App.BottomNav.Inactive"
-        app:itemTextColor="@color/nav_item_color"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_navigation_menu" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
