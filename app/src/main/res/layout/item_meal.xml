@@ -59,7 +59,7 @@
 
             <!-- Details -->
             <TextView
-                android:id="@+id/tvMealDetails"
+                android:id="@+id/tvMealSubtitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -86,13 +86,16 @@
         <!-- Chevron Icon -->
         <ImageView
             android:id="@+id/ivChevron"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:contentDescription="@string/cd_navigate_to_meal"
-            android:src="@drawable/outline_keyboard_arrow_right_24"
+            android:src="@drawable/outline_favorite_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/nav_inactive" />
+            app:tint="@color/nav_inactive"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

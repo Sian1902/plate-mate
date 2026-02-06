@@ -46,10 +46,7 @@ public class SplashActivity extends AppCompatActivity {
         setupAnimation(blurAnimBottom, brandColor);
         setupAnimation(progressBar, brandColor);
 
-        // Initialize dependencies
-        MealRemoteDataSource remoteDataSource = new MealRemoteDataSource();
-        MealRepository mealRepository = new MealRepoImp();
-        splashPresenter = new SplashPresenterImp();
+        splashPresenter = new SplashPresenterImp(getApplicationContext());
 
         // Load data and wait for it
         Log.d(TAG, "Starting to preload data...");
@@ -66,9 +63,9 @@ public class SplashActivity extends AppCompatActivity {
     private void onDataLoaded(InitialMealData data) {
         Log.d(TAG, "Data loaded successfully!");
 
-        if (data.getCategories() != null && data.getCategories().getCategories() != null) {
-            Log.d(TAG, "Categories count: " + data.getCategories().getCategories().size());
-            data.getCategories().getCategories().forEach(category ->
+        if (data.getCategories() != null && data.getCategories().getMeal() != null) {
+            Log.d(TAG, "Categories count: " + data.getCategories().getMeal().size());
+            data.getCategories().getMeal().forEach(category ->
                     Log.d(TAG, "Category: " + category.getStrCategory())
             );
         } else {

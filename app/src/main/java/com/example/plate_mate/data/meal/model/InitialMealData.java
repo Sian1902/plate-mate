@@ -1,22 +1,33 @@
 package com.example.plate_mate.data.meal.model;
 
 public class InitialMealData {
-    private CategoryResponse categories;
+    private CategorieListResponse categories;
     private IngredientResponse ingredients;
     private AreaResponse areas;
     private MealResponse meals;
+    private MealResponse randomMeal;
 
-    public InitialMealData(CategoryResponse categories,
+
+    public InitialMealData(CategorieListResponse categories,
                            IngredientResponse ingredients,
                            AreaResponse areas,
-                           MealResponse meals) {
+                           MealResponse meals,
+                           MealResponse randomMeal) {
         this.categories = categories;
         this.ingredients = ingredients;
         this.areas = areas;
         this.meals = meals;
+        this.randomMeal = randomMeal;
     }
 
-    public CategoryResponse getCategories() {
+    public InitialMealData() {
+    }
+
+    public MealResponse getRandomMeal() {
+        return randomMeal;
+    }
+
+    public CategorieListResponse getCategories() {
         return categories;
     }
 
