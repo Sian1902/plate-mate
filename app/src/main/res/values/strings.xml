@@ -54,5 +54,17 @@
     <string name="search_meals">Search for meals...</string>
     <string name="search_icon">Search icon</string>
     <string name="clear_search">Clear search</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign Up</string>
+    <string name="email_address">Email Address</string>
+    <string name="welcome_back">Welcome Back!</string>
+    <string name="sign_in">Sign In</string>
+    <string name="password">Password</string>
+    <string name="back">Back</string>
+    <string name="create_account">Create Account</string>
+    <string name="join_plate_mate">Join Plate Mate</string>
+    <string name="start_planning_your_meals_with_plate_mate_today">Start planning your meals with Plate Mate today</string>
+    <string name="already_have_an_account_sign_in">Already have an account? Sign In</string>
+    <string name="full_name">Full Name</string>
+    <string name="confirm_password">Confirm Password</string>
 
 </resources>
