@@ -1,12 +1,14 @@
 package com.example.plate_mate.data.meal.datasource.remote;
 
 import com.example.plate_mate.data.meal.model.AreaResponse;
+import com.example.plate_mate.data.meal.model.CategorieListResponse;
 import com.example.plate_mate.data.meal.model.CategoryResponse;
 import com.example.plate_mate.data.meal.model.IngredientResponse;
 import com.example.plate_mate.data.meal.model.MealResponse;
 import com.example.plate_mate.data.meal.network.RetrofitClient;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 
 public class MealRemoteDataSource {
     private final MealService mealService;
@@ -31,19 +33,20 @@ public class MealRemoteDataSource {
         return mealService.getCategories();
     }
 
-    public Observable<MealResponse> filterByIngredient(String ingredient) {
+    // Changed to Single for filter methods
+    public Single<MealResponse> filterByIngredient(String ingredient) {
         return mealService.filterByIngredient(ingredient);
     }
 
-    public Observable<MealResponse> filterByCategory(String category) {
+    public Single<MealResponse> filterByCategory(String category) {
         return mealService.filterByCategory(category);
     }
 
-    public Observable<MealResponse> filterByArea(String area) {
+    public Single<MealResponse> filterByArea(String area) {
         return mealService.filterByArea(area);
     }
 
-    public Observable<CategoryResponse> listCategories() {
+    public Observable<CategorieListResponse> listCategories() {
         return mealService.listCategories();
     }
 
