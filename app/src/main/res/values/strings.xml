@@ -50,4 +50,9 @@
     <string name="cd_add_meal">Add new meal</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Search -->
+    <string name="search_meals">Search for meals...</string>
+    <string name="search_icon">Search icon</string>
+    <string name="clear_search">Clear search</string>
+
 </resources>
