@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "353929701902",
+    "project_id": "plate-mate-3c993",
+    "storage_bucket": "plate-mate-3c993.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353929701902:android:7be60c790247ea8e2a6a5f",
+        "android_client_info": {
+          "package_name": "com.example.plate_mate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "353929701902-m72e9cd97elepkvnk3umh77sla10m5u7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.plate_mate",
+            "certificate_hash": "07697b3f9fc2f6aac635df59dd54e757a33246b9"
+          }
+        },
+        {
+          "client_id": "353929701902-f5q784ghrn0uf2ce48s3d9ceclh5tlt5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT6Pvq23Np4qJmEp0daPDLsWMLMjoY-XE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "353929701902-f5q784ghrn0uf2ce48s3d9ceclh5tlt5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

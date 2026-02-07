@@ -36,7 +36,6 @@ public interface MealService {
     @GET("list.php?i=list")
     Observable<IngredientResponse> listIngredients();
 
-    // Changed to Single for filter methods
     @GET("filter.php")
     Single<MealResponse> filterByIngredient(@Query("i") String ingredient);
 
