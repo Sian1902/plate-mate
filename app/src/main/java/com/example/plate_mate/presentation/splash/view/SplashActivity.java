@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.model.KeyPath;
+import com.example.plate_mate.AuthActivity;
 import com.example.plate_mate.MainActivity;
 import com.example.plate_mate.R;
 import com.example.plate_mate.data.meal.datasource.remote.MealRemoteDataSource;
@@ -97,13 +98,13 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             Log.w(TAG, "Meals data is null");
         }
-        goToMain();
+        goToAuth();
     }
 
     private void onDataLoadError(Throwable error) {
         Log.e(TAG, "Error loading data: " + error.getMessage(), error);
 
-        goToMain();
+        goToAuth();
     }
 
     private void setupAnimation(LottieAnimationView anim, int brandColor) {
@@ -118,6 +119,17 @@ public class SplashActivity extends AppCompatActivity {
         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        finish();
+    }
+
+    private void goToAuth() {
+        Intent intent = new Intent(SplashActivity.this, AuthActivity.class);
+        startActivity(intent);
+
+        // Professional fade transition
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+        // Finish splash so the user can't go back to it
         finish();
     }
 
