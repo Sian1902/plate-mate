@@ -23,11 +23,11 @@
             app:tint="@color/text_primary" />
 
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvSignUpTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/plus_jakarta_sans_bold"
-            android:text="@string/sign_in"
+            android:text="@string/create_account"
             android:textColor="@color/text_primary"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@id/btnBack"
@@ -39,13 +39,13 @@
             android:id="@+id/logoContainer"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             app:cardBackgroundColor="@color/badge_background"
             app:cardCornerRadius="@dimen/corner_radius_lg"
             app:cardElevation="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+            app:layout_constraintTop_toBottomOf="@id/tvSignUpTitle">
 
             <ImageView
                 android:layout_width="48dp"
@@ -56,32 +56,63 @@
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
-            android:id="@+id/tvWelcome"
+            android:id="@+id/tvHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xl"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/plus_jakarta_sans_bold"
-            android:text="@string/welcome_back"
+            android:text="@string/join_plate_mate"
             android:textColor="@color/text_primary"
-            android:textSize="32sp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="28sp"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/logoContainer" />
+
+        <TextView
+            android:id="@+id/tvSubHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/plus_jakarta_sans_medium"
+            android:text="@string/start_planning_your_meals_with_plate_mate_today"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvHeader" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/nameLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:hint="@string/full_name"
+            app:boxBackgroundColor="@color/surface"
+            app:boxCornerRadiusBottomEnd="@dimen/corner_radius_md"
+            app:boxCornerRadiusBottomStart="@dimen/corner_radius_md"
+            app:boxCornerRadiusTopEnd="@dimen/corner_radius_md"
+            app:boxCornerRadiusTopStart="@dimen/corner_radius_md"
+            app:layout_constraintTop_toBottomOf="@id/tvSubHeader">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/emailLayout"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="@dimen/spacing_lg"
             android:hint="@string/email_address"
             app:boxBackgroundColor="@color/surface"
             app:boxCornerRadiusBottomEnd="@dimen/corner_radius_md"
             app:boxCornerRadiusBottomStart="@dimen/corner_radius_md"
             app:boxCornerRadiusTopEnd="@dimen/corner_radius_md"
             app:boxCornerRadiusTopStart="@dimen/corner_radius_md"
-            app:boxStrokeColor="@color/primary"
-            app:layout_constraintTop_toBottomOf="@id/tvWelcome">
+            app:layout_constraintTop_toBottomOf="@id/nameLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -110,31 +141,55 @@
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/confirmPasswordLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:hint="@string/confirm_password"
+            app:boxBackgroundColor="@color/surface"
+            app:boxCornerRadiusBottomEnd="@dimen/corner_radius_md"
+            app:boxCornerRadiusBottomStart="@dimen/corner_radius_md"
+            app:boxCornerRadiusTopEnd="@dimen/corner_radius_md"
+            app:boxCornerRadiusTopStart="@dimen/corner_radius_md"
+            app:endIconMode="password_toggle"
+            app:layout_constraintTop_toBottomOf="@id/passwordLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
+        </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSignIn"
+            android:id="@+id/btnSignUp"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/plus_jakarta_sans_bold"
-            android:text="@string/sign_in"
+            android:text="@string/create_account"
             android:textAllCaps="false"
             android:textColor="@color/background"
             app:backgroundTint="@color/primary"
             app:cornerRadius="@dimen/corner_radius_md"
-            app:layout_constraintTop_toBottomOf="@id/passwordLayout" />
+            app:layout_constraintTop_toBottomOf="@id/confirmPasswordLayout" />
+
+
 
         <TextView
-            android:id="@+id/tvSignUpLink"
+            android:id="@+id/tvLoginLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="24dp"
-            android:text="@string/don_t_have_an_account_sign_up"
-            android:textColor="@color/text_secondary"
+            android:text="@string/already_have_an_account_sign_in"
+            android:textColor="@color/text_primary"
+            android:fontFamily="@font/plus_jakarta_sans_bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnSignIn" />
+            app:layout_constraintTop_toBottomOf="@id/btnSignUp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
