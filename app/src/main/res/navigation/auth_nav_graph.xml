@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/sign_in"
-        android:name="com.example.plate_mate.presentation.signin.SignInFragment"
+        android:name="com.example.plate_mate.presentation.signin.view.SignInFragment"
         android:label="Sign In"
         tools:layout="@layout/fragment_sign_in">
 
@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/sign_up"
-        android:name="com.example.plate_mate.presentation.signup.SignUpFragment"
+        android:name="com.example.plate_mate.presentation.signup.view.SignUpFragment"
         android:label="Sign Up"
         tools:layout="@layout/fragment_sign_up">
 
