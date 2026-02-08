@@ -101,7 +101,7 @@
                 android:focusable="true"
                 android:fontFamily="@font/plus_jakarta_sans_semibold"
                 android:padding="@dimen/spacing_sm"
-                android:text="@string/see_all"
+                android:text="@string/clear_all"
                 android:textColor="@color/primary"
                 android:textSize="13sp" />
         </LinearLayout>

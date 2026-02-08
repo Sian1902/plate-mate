@@ -60,16 +60,15 @@ public class SignInFragment extends Fragment implements SignInView {
         tilEmail = view.findViewById(R.id.emailLayout);
         tilPassword = view.findViewById(R.id.passwordLayout);
 
-        // Regular Sign In
         view.findViewById(R.id.btnSignIn).setOnClickListener(v ->
                 presenter.login(tilEmail.getEditText().getText().toString().trim(), tilPassword.getEditText().getText().toString().trim())
         );
 
-        // Google Sign In
         view.findViewById(R.id.btnGoogleSignIn).setOnClickListener(v -> {
             Intent signInIntent = googleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
+
 
         view.findViewById(R.id.tvSignUpLink).setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_signin_to_signup));

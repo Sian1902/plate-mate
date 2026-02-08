@@ -19,7 +19,7 @@ public interface MealService {
     Observable<MealResponse> searchMealByFirstLetter(@Query("f") String letter);
 
     @GET("lookup.php")
-    Observable<MealResponse> getMealById(@Query("i") String id);
+    Single<MealResponse> getMealById(@Query("i") String id);
 
     @GET("random.php")
     Observable<MealResponse> getRandomMeal();
