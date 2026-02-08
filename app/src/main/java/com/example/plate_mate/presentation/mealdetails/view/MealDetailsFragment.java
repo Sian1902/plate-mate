@@ -1,14 +1,11 @@
-package com.example.plate_mate.presentation.mealdetails;
+package com.example.plate_mate.presentation.mealdetails.view;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,26 +16,19 @@ import androidx.navigation.Navigation;
 
 import com.example.plate_mate.R;
 import com.example.plate_mate.data.meal.model.Meal;
-import com.example.plate_mate.data.meal.repository.MealRepoImp;
+import com.example.plate_mate.presentation.mealdetails.presenter.MealDetailsPresenter;
 import com.google.android.material.card.MaterialCardView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
+public class MealDetailsFragment extends Fragment implements MealDetailsView {
 
-public class MealDetailsFragment extends Fragment {
-
-    private static final String TAG = "MealDetailsFragment";
     private TextView tvTitle, tvIngredients, tvInstructions;
     private YouTubePlayerView youtubePlayerView;
-    private ImageButton btnBack;
     private MaterialCardView videoCard;
-
-    private final CompositeDisposable disposables = new CompositeDisposable();
     private NavVisibilityCallback navVisibilityCallback;
+    private MealDetailsPresenter presenter;
 
     public interface NavVisibilityCallback {
         void setNavigationVisibility(boolean isVisible);
@@ -64,7 +54,7 @@ public class MealDetailsFragment extends Fragment {
         tvIngredients = view.findViewById(R.id.tvIngredients);
         tvInstructions = view.findViewById(R.id.tvInstructions);
         youtubePlayerView = view.findViewById(R.id.youtube_player_view);
-        btnBack = view.findViewById(R.id.btnBack);
+        ImageButton btnBack = view.findViewById(R.id.btnBack);
 
         if (youtubePlayerView != null && youtubePlayerView.getParent() instanceof MaterialCardView) {
             videoCard = (MaterialCardView) youtubePlayerView.getParent();
@@ -73,32 +63,37 @@ public class MealDetailsFragment extends Fragment {
         btnBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
         getLifecycle().addObserver(youtubePlayerView);
 
+        presenter = new MealDetailsPresenter(this, requireContext());
+
         if (getArguments() != null) {
             Meal meal = (Meal) getArguments().getSerializable("selected_meal");
             if (meal != null) {
-                fetchCompleteMealData(meal.getIdMeal());
+                // Check if the meal object already contains detailed data
+                if (hasFullData(meal)) {
+                    showMealDetails(meal);
+                } else {
+                    presenter.fetchMealDetails(meal.getIdMeal());
+                }
             }
         }
     }
 
-    private void fetchCompleteMealData(String mealId) {
+    /**
+     * Checks if the meal object already has instructions and ingredients.
+     * This prevents redundant API calls for meals coming from search or random results.
+     */
+    private boolean hasFullData(Meal meal) {
+        String instructions = meal.getStrInstructions();
+        String firstIngredient = meal.getStrIngredient(1); // Using the specific getter if available, or getStrIngredient(1)
 
-        disposables.add(MealRepoImp.getInstance(requireContext())
-                .getMealById(mealId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    if (response.getMeals() != null && !response.getMeals().isEmpty()) {
-                        bindMealData(response.getMeals().get(0));
-                    } else {
-                        Toast.makeText(getContext(), "Failed to load details", Toast.LENGTH_SHORT).show();
-                    }
-                }, throwable -> {
-                    Toast.makeText(getContext(), "Network error", Toast.LENGTH_SHORT).show();
-                }));
+        boolean hasInstructions = instructions != null && !instructions.trim().isEmpty();
+        boolean hasIngredients = firstIngredient != null && !firstIngredient.trim().isEmpty();
+
+        return hasInstructions && hasIngredients;
     }
 
-    private void bindMealData(Meal meal) {
+    @Override
+    public void showMealDetails(Meal meal) {
         tvTitle.setText(meal.getStrMeal());
         tvInstructions.setText(meal.getStrInstructions());
 
@@ -115,36 +110,30 @@ public class MealDetailsFragment extends Fragment {
         String youtubeUrl = meal.getStrYoutube();
         if (youtubeUrl != null && !youtubeUrl.isEmpty()) {
             String videoId = extractVideoId(youtubeUrl);
-            if (videoId != null) setupYouTubePlayer(videoId);
-            else hideYouTubePlayer();
+            if (videoId != null) {
+                youtubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+                    @Override
+                    public void onReady(@NonNull YouTubePlayer youtubePlayer) {
+                        youtubePlayer.cueVideo(videoId, 0);
+                    }
+                });
+            } else {
+                if (videoCard != null) videoCard.setVisibility(View.GONE);
+            }
         } else {
-            hideYouTubePlayer();
+            if (videoCard != null) videoCard.setVisibility(View.GONE);
         }
     }
 
-    private void setupYouTubePlayer(String videoId) {
-        youtubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-            @Override
-            public void onReady(@NonNull YouTubePlayer youtubePlayer) {
-                youtubePlayer.cueVideo(videoId, 0);
-            }
-        });
-    }
-
-    private void hideYouTubePlayer() {
-        if (videoCard != null) videoCard.setVisibility(View.GONE);
+    @Override
+    public void showError(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private String extractVideoId(String youtubeUrl) {
         if (youtubeUrl.contains("v=")) return youtubeUrl.split("v=")[1].split("&")[0];
         if (youtubeUrl.contains("youtu.be/")) return youtubeUrl.split("youtu.be/")[1].split("\\?")[0];
         return null;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        disposables.clear();
     }
 
     @Override
@@ -157,5 +146,11 @@ public class MealDetailsFragment extends Fragment {
     public void onStop() {
         super.onStop();
         if (navVisibilityCallback != null) navVisibilityCallback.setNavigationVisibility(true);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.detachView();
     }
 }

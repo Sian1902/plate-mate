@@ -59,18 +59,43 @@ public class HomePresenterImp implements HomePresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    if (data != null) {
-                        if (data.getCategories() != null && data.getAreas() != null && data.getIngredients() != null) {
-                            homeView.setFilterOptions(data.getCategories().getMeal(), data.getAreas().getMeals(), data.getIngredients().getMeals());
-                        }
-                        if (data.getMeals() != null) {
-                            initialMeals = new ArrayList<>(data.getMeals().getMeals());
-                            homeView.setupUi(initialMeals, (data.getRandomMeal() != null && !data.getRandomMeal().getMeals().isEmpty()) ? data.getRandomMeal().getMeals().get(0) : null);
-                        }
-                    }
-                }, e -> homeView.showError("Network Error")));
-    }
+                    // 1. Critical Check: Is the view still attached?
+                    if (homeView == null) return;
 
+                    if (data != null) {
+                        // 2. Safe check for Filter Options
+                        if (data.getCategories() != null && data.getAreas() != null && data.getIngredients() != null) {
+                            homeView.setFilterOptions(
+                                    data.getCategories().getMeal() != null ? data.getCategories().getMeal() : new ArrayList<>(),
+                                    data.getAreas().getMeals() != null ? data.getAreas().getMeals() : new ArrayList<>(),
+                                    data.getIngredients().getMeals() != null ? data.getIngredients().getMeals() : new ArrayList<>()
+                            );
+                        }
+
+                        // 3. Safe check for Initial Meal List
+                        if (data.getMeals() != null && data.getMeals().getMeals() != null) {
+                            initialMeals = new ArrayList<>(data.getMeals().getMeals());
+                        } else {
+                            initialMeals = new ArrayList<>();
+                        }
+
+                        // 4. Safe check for Hero Meal (Random Meal)
+                        Meal heroMeal = null;
+                        if (data.getRandomMeal() != null &&
+                                data.getRandomMeal().getMeals() != null &&
+                                !data.getRandomMeal().getMeals().isEmpty()) {
+                            heroMeal = data.getRandomMeal().getMeals().get(0);
+                        }
+
+                        // 5. Update UI only if we have at least an empty list to show
+                        homeView.setupUi(initialMeals, heroMeal);
+                    }
+                }, e -> {
+                    if (homeView != null) {
+                        homeView.showError("Failed to load data: " + e.getMessage());
+                    }
+                }));
+    }
     @Override
     public void filterMeals(String category, String area, String ingredient) {
         if (category != null) {

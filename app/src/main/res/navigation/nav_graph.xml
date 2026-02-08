@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/nav_details"
-        android:name="com.example.plate_mate.presentation.mealdetails.MealDetailsFragment"
+        android:name="com.example.plate_mate.presentation.mealdetails.view.MealDetailsFragment"
         android:label="Recipe Details"
         tools:layout="@layout/fragment_meal_details">
         <argument

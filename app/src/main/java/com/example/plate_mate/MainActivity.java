@@ -1,6 +1,5 @@
 package com.example.plate_mate;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -11,7 +10,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.plate_mate.presentation.mealdetails.MealDetailsFragment;
+import com.example.plate_mate.presentation.mealdetails.view.MealDetailsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity implements MealDetailsFragment.NavVisibilityCallback {
