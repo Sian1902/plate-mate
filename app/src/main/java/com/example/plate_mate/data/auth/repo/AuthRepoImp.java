@@ -22,8 +22,12 @@ public class AuthRepoImp implements AuthRepo {
     }
 
     @Override
-    public Completable register(String email, String password) {
+    public Completable register(String name, String email, String password) {
+        // Step 1: Create user account
+        // Step 2: Update display name in Firebase
+        // Step 3: Save session locally
         return remoteDataSource.signUp(email, password)
+                .andThen(remoteDataSource.updateDisplayName(name))
                 .doOnComplete(() -> saveSessionLocally(false));
     }
 
@@ -39,6 +43,11 @@ public class AuthRepoImp implements AuthRepo {
             remoteDataSource.logout();
             localDataSource.clearSession();
         });
+    }
+
+    @Override
+    public Completable updateUserProfile(String displayName, String photoUrl) {
+        return remoteDataSource.updateUserProfile(displayName, photoUrl);
     }
 
     private void saveSessionLocally(boolean isGuest) {
@@ -65,5 +74,15 @@ public class AuthRepoImp implements AuthRepo {
     @Override
     public String getCurrentUserId() {
         return localDataSource.getUserId();
+    }
+
+    @Override
+    public void setDarkMode(boolean isEnabled) {
+        localDataSource.setDarkMode(isEnabled);
+    }
+
+    @Override
+    public boolean isDarkModeEnabled() {
+        return localDataSource.isDarkModeEnabled();
     }
 }

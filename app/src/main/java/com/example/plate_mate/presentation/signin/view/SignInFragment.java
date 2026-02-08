@@ -69,6 +69,13 @@ public class SignInFragment extends Fragment implements SignInView {
             startActivityForResult(signInIntent, RC_SIGN_IN);
         });
 
+        view.findViewById(R.id.btnContinueAsGuest).setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MainActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+        });
+
+
 
         view.findViewById(R.id.tvSignUpLink).setOnClickListener(v ->
                 Navigation.findNavController(v).navigate(R.id.action_signin_to_signup));

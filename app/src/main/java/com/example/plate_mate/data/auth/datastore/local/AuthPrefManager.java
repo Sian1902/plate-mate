@@ -9,6 +9,7 @@ public class AuthPrefManager {
     private static final String KEY_USER_ID = "userId";
     private static final String KEY_USER_EMAIL = "userEmail";
     private static final String KEY_IS_GUEST = "isGuest";
+    private static final String KEY_DARK_MODE = "dark_mode_enabled";
 
     private static AuthPrefManager instance;
     private final SharedPreferences sharedPreferences;
@@ -48,5 +49,13 @@ public class AuthPrefManager {
     public void clearSession() {
         editor.clear();
         editor.apply();
+    }
+    public void setDarkMode(boolean isEnabled) {
+        editor.putBoolean(KEY_DARK_MODE, isEnabled); //
+        editor.apply(); //
+    }
+
+    public boolean isDarkModeEnabled() {
+        return sharedPreferences.getBoolean(KEY_DARK_MODE, false); //
     }
 }
