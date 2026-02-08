@@ -41,7 +41,7 @@ public class HomeFragment extends Fragment implements HomeView {
     private EditText etSearch;
     private ImageView ivClearSearch;
     private Chip chipCountry, chipCategory, chipIngredients;
-
+    private boolean isClearing = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,29 +60,32 @@ public class HomeFragment extends Fragment implements HomeView {
         chipCountry = view.findViewById(R.id.chipCountry);
         chipCategory = view.findViewById(R.id.chipCategory);
         chipIngredients = view.findViewById(R.id.chipIngredients);
+
         rvMeals.setLayoutManager(new LinearLayoutManager(getContext()));
         homePresenter = new HomePresenterImp(requireContext(), this);
 
         setupSearch();
         setupChips();
+
         view.findViewById(R.id.tvSeeAll).setOnClickListener(v -> {
+            isClearing = true;
             clearUI();
             homePresenter.clearAllFilters();
+            isClearing = false;
         });
+
         homePresenter.loadHomeData();
     }
 
     private void setupSearch() {
         etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isClearing) return;
                 ivClearSearch.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
                 homePresenter.searchMeals(s.toString());
             }
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
         ivClearSearch.setOnClickListener(v -> etSearch.setText(""));
     }
@@ -93,8 +96,7 @@ public class HomeFragment extends Fragment implements HomeView {
             String[] names = areas.stream().map(Area::getStrArea).toArray(String[]::new);
             new androidx.appcompat.app.AlertDialog.Builder(requireContext()).setTitle("Country")
                     .setItems(names, (d, i) -> {
-                        chipCountry.setText(names[i]);
-                        chipCountry.setChecked(true);
+                        chipCountry.setText(names[i]); chipCountry.setChecked(true);
                         homePresenter.filterMeals(null, names[i], null);
                     }).show();
         });
@@ -103,8 +105,7 @@ public class HomeFragment extends Fragment implements HomeView {
             String[] names = categories.stream().map(Category::getStrCategory).toArray(String[]::new);
             new androidx.appcompat.app.AlertDialog.Builder(requireContext()).setTitle("Category")
                     .setItems(names, (d, i) -> {
-                        chipCategory.setText(names[i]);
-                        chipCategory.setChecked(true);
+                        chipCategory.setText(names[i]); chipCategory.setChecked(true);
                         homePresenter.filterMeals(names[i], null, null);
                     }).show();
         });
@@ -113,8 +114,7 @@ public class HomeFragment extends Fragment implements HomeView {
             String[] names = ingredients.stream().map(Ingredient::getStrIngredient).toArray(String[]::new);
             new androidx.appcompat.app.AlertDialog.Builder(requireContext()).setTitle("Ingredient")
                     .setItems(names, (d, i) -> {
-                        chipIngredients.setText(names[i]);
-                        chipIngredients.setChecked(true);
+                        chipIngredients.setText(names[i]); chipIngredients.setChecked(true);
                         homePresenter.filterMeals(null, null, names[i]);
                     }).show();
         });
@@ -122,6 +122,7 @@ public class HomeFragment extends Fragment implements HomeView {
 
     private void clearUI() {
         etSearch.setText("");
+        ivClearSearch.setVisibility(View.GONE);
         chipCountry.setText("Country"); chipCountry.setChecked(false);
         chipCategory.setText("Category"); chipCategory.setChecked(false);
         chipIngredients.setText("Ingredients"); chipIngredients.setChecked(false);
@@ -134,7 +135,7 @@ public class HomeFragment extends Fragment implements HomeView {
             Glide.with(this).load(hero.getStrMealThumb()).into(ivHeroImage);
             layoutHeroMeal.setOnClickListener(v -> navigate(hero));
         }
-        adapter = new MealAdapter(meals, this::navigate);
+        adapter = new MealAdapter(new ArrayList<>(meals), this::navigate);
         rvMeals.setAdapter(adapter);
     }
 
@@ -143,8 +144,20 @@ public class HomeFragment extends Fragment implements HomeView {
         Navigation.findNavController(requireView()).navigate(R.id.nav_details, b);
     }
 
-    @Override public void updateMealList(List<Meal> meals) { if (adapter != null) adapter.updateMeals(meals); }
-    @Override public void setFilterOptions(List<Category> c, List<Area> a, List<Ingredient> i) { categories = c; areas = a; ingredients = i; }
-    @Override public void showError(String m) { Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show(); }
-    @Override public void onDestroy() { super.onDestroy(); if (homePresenter instanceof HomePresenterImp) ((HomePresenterImp) homePresenter).dispose(); }
+    @Override public void updateMealList(List<Meal> m) {
+        if (adapter != null) adapter.updateMeals(new ArrayList<>(m));
+    }
+
+    @Override public void setFilterOptions(List<Category> c, List<Area> a, List<Ingredient> i) {
+        categories = c; areas = a; ingredients = i;
+    }
+
+    @Override public void showError(String m) {
+        Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override public void onDestroy() {
+        super.onDestroy();
+        if (homePresenter instanceof HomePresenterImp) ((HomePresenterImp) homePresenter).dispose();
+    }
 }
