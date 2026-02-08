@@ -15,6 +15,7 @@ import com.airbnb.lottie.model.KeyPath;
 import com.example.plate_mate.AuthActivity;
 import com.example.plate_mate.MainActivity;
 import com.example.plate_mate.R;
+import com.example.plate_mate.data.auth.datastore.local.AuthPrefManager;
 import com.example.plate_mate.data.meal.datasource.remote.MealRemoteDataSource;
 import com.example.plate_mate.data.meal.model.InitialMealData;
 import com.example.plate_mate.data.meal.repository.MealRepoImp;
@@ -31,6 +32,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private Disposable splashDisposable;
     private SplashPresenter splashPresenter;
+    private AuthPrefManager authPrefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +49,41 @@ public class SplashActivity extends AppCompatActivity {
         setupAnimation(blurAnimBottom, brandColor);
         setupAnimation(progressBar, brandColor);
 
+        // Initialize AuthPrefManager
+        authPrefManager = AuthPrefManager.getInstance(getApplicationContext());
+
         splashPresenter = new SplashPresenterImp(getApplicationContext());
 
-        // Load data and wait for it
-        Log.d(TAG, "Starting to preload data...");
+        // Check if user is already logged in
+        if (isUserLoggedIn()) {
+            Log.d(TAG, "User is already logged in, skipping auth screen");
+            // User is logged in, directly preload data and go to MainActivity
+            preloadDataAndNavigateToMain();
+        } else {
+            Log.d(TAG, "User is not logged in, will show auth screen");
+            // User is not logged in, preload data and go to AuthActivity
+            preloadDataAndNavigateToAuth();
+        }
+    }
+
+    private boolean isUserLoggedIn() {
+        return authPrefManager.isLoggedIn();
+    }
+
+    private void preloadDataAndNavigateToMain() {
+        Log.d(TAG, "Starting to preload data for logged-in user...");
+
+        splashDisposable = splashPresenter.preloadData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        this::onDataLoadedAndGoToMain,
+                        this::onDataLoadErrorAndGoToMain
+                );
+    }
+
+    private void preloadDataAndNavigateToAuth() {
+        Log.d(TAG, "Starting to preload data for new user...");
 
         splashDisposable = splashPresenter.preloadData()
                 .subscribeOn(Schedulers.io())
@@ -61,9 +94,30 @@ public class SplashActivity extends AppCompatActivity {
                 );
     }
 
+    private void onDataLoadedAndGoToMain(InitialMealData data) {
+        Log.d(TAG, "Data loaded successfully for logged-in user!");
+        logDataInfo(data);
+        goToMain();
+    }
+
+    private void onDataLoadErrorAndGoToMain(Throwable error) {
+        Log.e(TAG, "Error loading data for logged-in user: " + error.getMessage(), error);
+        goToMain(); // Still go to main even if data fails to load
+    }
+
     private void onDataLoaded(InitialMealData data) {
         Log.d(TAG, "Data loaded successfully!");
+        logDataInfo(data);
+        goToAuth();
+    }
 
+    private void onDataLoadError(Throwable error) {
+        Log.e(TAG, "Error loading data: " + error.getMessage(), error);
+        goToAuth();
+    }
+
+    private void logDataInfo(InitialMealData data) {
+        // Your existing logging code here...
         if (data.getCategories() != null && data.getCategories().getMeal() != null) {
             Log.d(TAG, "Categories count: " + data.getCategories().getMeal().size());
             data.getCategories().getMeal().forEach(category ->
@@ -81,6 +135,7 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             Log.w(TAG, "Ingredients data is null");
         }
+
         if (data.getAreas() != null && data.getAreas().getMeals() != null) {
             Log.d(TAG, "Areas count: " + data.getAreas().getMeals().size());
             data.getAreas().getMeals().forEach(area ->
@@ -98,13 +153,6 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             Log.w(TAG, "Meals data is null");
         }
-        goToAuth();
-    }
-
-    private void onDataLoadError(Throwable error) {
-        Log.e(TAG, "Error loading data: " + error.getMessage(), error);
-
-        goToAuth();
     }
 
     private void setupAnimation(LottieAnimationView anim, int brandColor) {

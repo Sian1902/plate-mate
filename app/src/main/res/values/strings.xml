@@ -66,5 +66,6 @@
     <string name="already_have_an_account_sign_in">Already have an account? Sign In</string>
     <string name="full_name">Full Name</string>
     <string name="confirm_password">Confirm Password</string>
+    <string name="continue_as_guest">Continue as a guest</string>
 
 </resources>

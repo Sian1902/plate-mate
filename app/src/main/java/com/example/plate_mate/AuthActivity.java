@@ -1,5 +1,6 @@
 package com.example.plate_mate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +25,7 @@ public class AuthActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize Navigation
+
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.auth_nav_host);
 
