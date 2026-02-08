@@ -14,9 +14,6 @@ public interface HomeView {
 
     void updateMealList(List<Meal> meals);
 
-    void showLoading();
-
-    void hideLoading();
 
     void showError(String message);
 }

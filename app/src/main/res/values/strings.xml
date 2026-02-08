@@ -67,5 +67,6 @@
     <string name="full_name">Full Name</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="continue_as_guest">Continue as a guest</string>
+    <string name="clear_all">Clear All</string>
 
 </resources>

@@ -21,7 +21,7 @@ public class MealRemoteDataSource {
         return mealService.searchMealByName(name);
     }
 
-    public Observable<MealResponse> getMealById(String id) {
+    public Single<MealResponse> getMealById(String id) {
         return mealService.getMealById(id);
     }
 
@@ -61,4 +61,6 @@ public class MealRemoteDataSource {
     public Observable<MealResponse> searchMealByFirstLetter(String letter) {
         return mealService.searchMealByFirstLetter(letter);
     }
+
+
 }

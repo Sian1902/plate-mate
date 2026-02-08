@@ -1,12 +1,13 @@
 package com.example.plate_mate.data.meal.repository;
 
 import android.content.Context;
-
 import com.example.plate_mate.data.meal.datasource.local.MealSharedPrefManager;
 import com.example.plate_mate.data.meal.datasource.remote.MealRemoteDataSource;
+import com.example.plate_mate.data.meal.model.AreaResponse;
+import com.example.plate_mate.data.meal.model.CategorieListResponse;
+import com.example.plate_mate.data.meal.model.IngredientResponse;
 import com.example.plate_mate.data.meal.model.InitialMealData;
 import com.example.plate_mate.data.meal.model.MealResponse;
-
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
@@ -34,17 +35,12 @@ public class MealRepoImp implements MealRepository {
     @Override
     public Observable<InitialMealData> preloadInitialData() {
         return Observable.zip(
-                remoteDataSource.listCategories(),
-                remoteDataSource.listIngredients(),
-                remoteDataSource.listAreas(),
-                remoteDataSource.searchMealByFirstLetter("a"),
-                remoteDataSource.getRandomMeal(),
-                (categories, ingredients, areas, meals, randomMeal) -> {
-                    InitialMealData splashData = new InitialMealData(
-                            categories, ingredients, areas, meals, randomMeal
-                    );
-                    return splashData;
-                }
+                remoteDataSource.listCategories().onErrorReturnItem(new CategorieListResponse()),
+                remoteDataSource.listIngredients().onErrorReturnItem(new IngredientResponse()),
+                remoteDataSource.listAreas().onErrorReturnItem(new AreaResponse()),
+                remoteDataSource.searchMealByFirstLetter("a").onErrorReturnItem(new MealResponse()),
+                remoteDataSource.getRandomMeal().onErrorReturnItem(new MealResponse()),
+                InitialMealData::new
         ).flatMap(splashData ->
                 dataStoreManager.saveInitialData(splashData)
                         .andThen(Observable.just(splashData))
@@ -58,16 +54,25 @@ public class MealRepoImp implements MealRepository {
 
     @Override
     public Single<MealResponse> searchMealsByCategory(String category) {
-        return remoteDataSource.filterByCategory(category);
+        return remoteDataSource.filterByCategory(category).onErrorReturnItem(new MealResponse());
     }
 
     @Override
     public Single<MealResponse> searchMealsByArea(String area) {
-        return remoteDataSource.filterByArea(area);
+        return remoteDataSource.filterByArea(area).onErrorReturnItem(new MealResponse());
     }
 
     @Override
     public Single<MealResponse> searchMealsByIngredient(String ingredient) {
-        return remoteDataSource.filterByIngredient(ingredient);
+        return remoteDataSource.filterByIngredient(ingredient).onErrorReturnItem(new MealResponse());
+    }
+
+    @Override
+    public Observable<MealResponse> SearchMealsByName(String name) {
+        return remoteDataSource.searchMealByName(name).onErrorReturnItem(new MealResponse());
+    }
+
+    public Single<MealResponse> getMealById(String id) {
+        return remoteDataSource.getMealById(id).onErrorReturnItem(new MealResponse());
     }
 }

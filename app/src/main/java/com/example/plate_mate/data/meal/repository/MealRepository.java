@@ -17,4 +17,6 @@ public interface MealRepository {
     Single<MealResponse> searchMealsByArea(String area);
 
     Single<MealResponse> searchMealsByIngredient(String ingredient);
+
+    Observable<MealResponse> SearchMealsByName(String name);
 }
