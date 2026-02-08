@@ -4,6 +4,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
@@ -22,6 +23,7 @@ public class AuthRemoteDataSource {
                         .addOnFailureListener(emitter::onError)
         );
     }
+
     public Completable signInWithGoogle(String idToken) {
         return Completable.create(emitter -> {
             AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
@@ -38,12 +40,48 @@ public class AuthRemoteDataSource {
                         .addOnFailureListener(emitter::onError)
         );
     }
+
+    /**
+     * Update user profile (display name, photo URL, etc.)
+     */
+    public Completable updateUserProfile(String displayName, String photoUrl) {
+        return Completable.create(emitter -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                UserProfileChangeRequest.Builder profileUpdates = new UserProfileChangeRequest.Builder();
+
+                if (displayName != null) {
+                    profileUpdates.setDisplayName(displayName);
+                }
+
+                if (photoUrl != null) {
+                    profileUpdates.setPhotoUri(android.net.Uri.parse(photoUrl));
+                }
+
+                user.updateProfile(profileUpdates.build())
+                        .addOnSuccessListener(aVoid -> emitter.onComplete())
+                        .addOnFailureListener(emitter::onError);
+            } else {
+                emitter.onError(new Exception("No user logged in"));
+            }
+        });
+    }
+
+    /**
+     * Update only display name
+     */
+    public Completable updateDisplayName(String displayName) {
+        return updateUserProfile(displayName, null);
+    }
+
     public void logout() {
         firebaseAuth.signOut();
     }
+
     public Single<Boolean> isUserLoggedIn() {
         return Single.just(firebaseAuth.getCurrentUser() != null);
     }
+
     public FirebaseUser getCurrentUser() {
         return firebaseAuth.getCurrentUser();
     }

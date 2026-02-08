@@ -68,5 +68,9 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="continue_as_guest">Continue as a guest</string>
     <string name="clear_all">Clear All</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="app_settings">APP SETTINGS</string>
+    <string name="logout">Logout</string>
 
 </resources>

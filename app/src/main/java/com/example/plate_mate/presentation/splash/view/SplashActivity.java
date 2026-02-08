@@ -16,12 +16,13 @@ import com.example.plate_mate.AuthActivity;
 import com.example.plate_mate.MainActivity;
 import com.example.plate_mate.R;
 import com.example.plate_mate.data.auth.datastore.local.AuthPrefManager;
-import com.example.plate_mate.data.meal.datasource.remote.MealRemoteDataSource;
+import com.example.plate_mate.data.auth.datastore.remote.AuthRemoteDataSource;
+import com.example.plate_mate.data.auth.repo.AuthRepo;
+import com.example.plate_mate.data.auth.repo.AuthRepoImp;
 import com.example.plate_mate.data.meal.model.InitialMealData;
-import com.example.plate_mate.data.meal.repository.MealRepoImp;
-import com.example.plate_mate.data.meal.repository.MealRepository;
 import com.example.plate_mate.presentation.splash.presenter.SplashPresenter;
 import com.example.plate_mate.presentation.splash.presenter.SplashPresenterImp;
+import com.example.plate_mate.util.DarkModeHelper;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -32,10 +33,19 @@ public class SplashActivity extends AppCompatActivity {
 
     private Disposable splashDisposable;
     private SplashPresenter splashPresenter;
-    private AuthPrefManager authPrefManager;
+    private AuthRepo authRepo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize AuthRepo for accessing user session and dark mode
+        AuthRemoteDataSource remoteDataSource = new AuthRemoteDataSource();
+        AuthPrefManager prefManager = AuthPrefManager.getInstance(getApplicationContext());
+        authRepo = new AuthRepoImp(remoteDataSource, prefManager);
+
+        // Apply dark mode BEFORE setting content view
+        // Using DarkModeHelper which uses AuthRepo
+        DarkModeHelper.applyDarkMode(getApplicationContext());
+
         setTheme(R.style.Theme_PlateMate_Splash);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
@@ -49,12 +59,9 @@ public class SplashActivity extends AppCompatActivity {
         setupAnimation(blurAnimBottom, brandColor);
         setupAnimation(progressBar, brandColor);
 
-        // Initialize AuthPrefManager
-        authPrefManager = AuthPrefManager.getInstance(getApplicationContext());
-
         splashPresenter = new SplashPresenterImp(getApplicationContext());
 
-        // Check if user is already logged in
+        // Check if user is already logged in using AuthRepo
         if (isUserLoggedIn()) {
             Log.d(TAG, "User is already logged in, skipping auth screen");
             // User is logged in, directly preload data and go to MainActivity
@@ -67,7 +74,8 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private boolean isUserLoggedIn() {
-        return authPrefManager.isLoggedIn();
+        // Use AuthRepo instead of AuthPrefManager directly
+        return authRepo.isUserLoggedIn();
     }
 
     private void preloadDataAndNavigateToMain() {
