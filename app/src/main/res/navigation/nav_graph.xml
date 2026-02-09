@@ -33,7 +33,7 @@
 
     <fragment
         android:id="@+id/nav_saved"
-        android:name="com.example.plate_mate.presentation.saved.SavedFragment"
+        android:name="com.example.plate_mate.presentation.saved.view.SavedFragment"
         android:label="Saved"
         tools:layout="@layout/fragment_saved" />
 

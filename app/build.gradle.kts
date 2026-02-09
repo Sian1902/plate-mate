@@ -60,4 +60,13 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.pierfrancescosoffritti.androidyoutubeplayer:core:13.0.0")
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-rxjava3:2.6.1")
+
+    // Lombok dependencies - MUST come before Room compiler
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
+
+    // Room compiler - MUST come after Lombok
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
 }

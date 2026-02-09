@@ -41,7 +41,7 @@
             android:layout_marginEnd="@dimen/spacing_sm"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/ivChevron"
+            app:layout_constraintEnd_toStartOf="@id/ivFavorite"
             app:layout_constraintStart_toEndOf="@id/ivMealThumbnail"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -83,19 +83,20 @@
             </com.google.android.material.chip.ChipGroup>
         </LinearLayout>
 
-        <!-- Chevron Icon -->
+        <!-- Favorite Icon -->
         <ImageView
-            android:id="@+id/ivChevron"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:contentDescription="@string/cd_navigate_to_meal"
+            android:id="@+id/ivFavorite"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/add_to_favorite"
+            android:padding="12dp"
             android:src="@drawable/outline_favorite_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/nav_inactive"
+            app:tint="@color/text_primary"
             android:clickable="true"
-            android:focusable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:focusable="true" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

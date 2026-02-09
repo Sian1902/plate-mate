@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp">
+
             <ImageButton
                 android:id="@+id/btnBack"
                 android:layout_width="48dp"
@@ -29,34 +30,37 @@
                 android:src="@drawable/outline_arrow_back_ios_new_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:tint="@color/text_primary" />
+
+            <ImageView
+                android:id="@+id/btn_favorite"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="12dp"
+                android:src="@drawable/outline_favorite_24"
+                android:contentDescription="@string/add_to_favorite"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:tint="@color/text_primary" />
 
             <TextView
                 android:id="@+id/tvMealTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
                 android:fontFamily="@font/plus_jakarta_sans_bold"
                 android:textColor="@color/text_primary"
                 android:textSize="26sp"
                 android:ellipsize="end"
                 android:maxLines="2"
                 app:layout_constraintStart_toEndOf="@id/btnBack"
-
+                app:layout_constraintEnd_toStartOf="@id/btn_favorite"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btn_favorite"
-                tools:text="Delicious Spaghetti " />
-
-            <ImageView
-                android:id="@+id/btn_favorite"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/outline_favorite_24"
-                app:layout_constraintBottom_toBottomOf="@id/tvMealTitle"
-                app:layout_constraintTop_toTopOf="@id/tvMealTitle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:tint="@color/text_primary" />
+                app:layout_constraintHorizontal_bias="0"
+                tools:text="Delicious Spaghetti Carbonara with Extra Long Name" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

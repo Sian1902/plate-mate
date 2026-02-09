@@ -33,6 +33,7 @@ public class HomePresenterImp implements HomePresenter {
     private List<Meal> areaResults = new ArrayList<>();
     private List<Meal> ingredientResults = new ArrayList<>();
     private List<Meal> searchResults = new ArrayList<>();
+    private Set<String> favoriteMealIds = new HashSet<>();
 
     private String currentCategory = null;
     private String currentArea = null;
@@ -89,6 +90,9 @@ public class HomePresenterImp implements HomePresenter {
 
                         // 5. Update UI only if we have at least an empty list to show
                         homeView.setupUi(initialMeals, heroMeal);
+
+                        // 6. Load favorites after setting up UI
+                        loadFavorites();
                     }
                 }, e -> {
                     if (homeView != null) {
@@ -96,6 +100,106 @@ public class HomePresenterImp implements HomePresenter {
                     }
                 }));
     }
+
+    @Override
+    public void loadFavorites() {
+        disposables.add(mealRepo.getAllFavorites()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(favorites -> {
+                    if (homeView == null) return;
+
+                    favoriteMealIds.clear();
+                    for (Meal meal : favorites) {
+                        if (meal.getIdMeal() != null) {
+                            favoriteMealIds.add(meal.getIdMeal());
+                        }
+                    }
+                    homeView.updateFavorites(favoriteMealIds);
+                }, e -> {
+                    if (homeView != null) {
+                        homeView.showError("Failed to load favorites: " + e.getMessage());
+                    }
+                }));
+    }
+
+    @Override
+    public void toggleFavorite(Meal meal) {
+        if (meal == null || meal.getIdMeal() == null) return;
+
+        boolean isFavorite = favoriteMealIds.contains(meal.getIdMeal());
+
+        if (isFavorite) {
+            // Remove from favorites
+            removeFavorite(meal.getIdMeal());
+        } else {
+            // Check if meal is complete before adding
+            if (isMealComplete(meal)) {
+                addFavorite(meal);
+            } else {
+                // Fetch complete meal data first
+                fetchCompleteMealAndAddToFavorites(meal.getIdMeal());
+            }
+        }
+    }
+
+    private boolean isMealComplete(Meal meal) {
+        // Check if essential fields are present
+        return meal.getStrInstructions() != null && !meal.getStrInstructions().trim().isEmpty();
+    }
+
+    private void fetchCompleteMealAndAddToFavorites(String mealId) {
+        disposables.add(mealRepo.getMealById(mealId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    if (response != null && response.getMeals() != null && !response.getMeals().isEmpty()) {
+                        Meal completeMeal = response.getMeals().get(0);
+                        addFavorite(completeMeal);
+                    } else {
+                        if (homeView != null) {
+                            homeView.showError("Failed to fetch meal details");
+                        }
+                    }
+                }, e -> {
+                    if (homeView != null) {
+                        homeView.showError("Failed to add to favorites: " + e.getMessage());
+                    }
+                }));
+    }
+
+    private void addFavorite(Meal meal) {
+        disposables.add(mealRepo.insertFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    favoriteMealIds.add(meal.getIdMeal());
+                    if (homeView != null) {
+                        homeView.updateFavorites(favoriteMealIds);
+                    }
+                }, e -> {
+                    if (homeView != null) {
+                        homeView.showError("Failed to add to favorites: " + e.getMessage());
+                    }
+                }));
+    }
+
+    private void removeFavorite(String mealId) {
+        disposables.add(mealRepo.deleteFavorite(mealId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    favoriteMealIds.remove(mealId);
+                    if (homeView != null) {
+                        homeView.updateFavorites(favoriteMealIds);
+                    }
+                }, e -> {
+                    if (homeView != null) {
+                        homeView.showError("Failed to remove from favorites: " + e.getMessage());
+                    }
+                }));
+    }
+
     @Override
     public void filterMeals(String category, String area, String ingredient) {
         if (category != null) {

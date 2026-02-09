@@ -1,13 +1,26 @@
 package com.example.plate_mate.data.meal.model;
 
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Meal implements Serializable {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity(tableName = "favorites")
+public class Meal implements Serializable {
+    @PrimaryKey
+    @NonNull
     @SerializedName("idMeal")
-    private String idMeal;
+    private String idMeal = "";
 
     @SerializedName("strMeal")
     private String strMeal;
@@ -69,14 +82,7 @@ public class Meal implements Serializable {
     @SerializedName("strMeasure19") private String strMeasure19;
     @SerializedName("strMeasure20") private String strMeasure20;
 
-    public String getIdMeal() { return idMeal; }
-    public String getStrMeal() { return strMeal; }
-    public String getStrCategory() { return strCategory; }
-    public String getStrArea() { return strArea; }
-    public String getStrInstructions() { return strInstructions; }
-    public String getStrMealThumb() { return strMealThumb; }
-    public String getStrYoutube() { return strYoutube; }
-
+    // Utility methods for indexed access
     public String getStrIngredient(int index) {
         switch (index) {
             case 1: return strIngredient1;
