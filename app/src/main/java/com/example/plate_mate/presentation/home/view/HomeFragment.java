@@ -27,6 +27,7 @@ import com.example.plate_mate.presentation.home.presenter.HomePresenterImp;
 import com.google.android.material.chip.Chip;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class HomeFragment extends Fragment implements HomeView {
     private RecyclerView rvMeals;
@@ -135,28 +136,50 @@ public class HomeFragment extends Fragment implements HomeView {
             Glide.with(this).load(hero.getStrMealThumb()).into(ivHeroImage);
             layoutHeroMeal.setOnClickListener(v -> navigate(hero));
         }
-        adapter = new MealAdapter(new ArrayList<>(meals), this::navigate);
+        adapter = new MealAdapter(new ArrayList<>(meals), this::navigate, this::onFavoriteClick);
         rvMeals.setAdapter(adapter);
     }
 
     private void navigate(Meal meal) {
-        Bundle b = new Bundle(); b.putSerializable("selected_meal", meal);
+        Bundle b = new Bundle();
+        b.putSerializable("selected_meal", meal);
         Navigation.findNavController(requireView()).navigate(R.id.nav_details, b);
     }
 
-    @Override public void updateMealList(List<Meal> m) {
+    private void onFavoriteClick(Meal meal, boolean currentlyFavorite) {
+        homePresenter.toggleFavorite(meal);
+        // Update the adapter immediately for better UX
+        if (adapter != null) {
+            adapter.toggleFavorite(meal.getIdMeal());
+        }
+    }
+
+    @Override
+    public void updateMealList(List<Meal> m) {
         if (adapter != null) adapter.updateMeals(new ArrayList<>(m));
     }
 
-    @Override public void setFilterOptions(List<Category> c, List<Area> a, List<Ingredient> i) {
-        categories = c; areas = a; ingredients = i;
+    @Override
+    public void updateFavorites(Set<String> favoriteMealIds) {
+        if (adapter != null) {
+            adapter.updateFavorites(favoriteMealIds);
+        }
     }
 
-    @Override public void showError(String m) {
+    @Override
+    public void setFilterOptions(List<Category> c, List<Area> a, List<Ingredient> i) {
+        categories = c;
+        areas = a;
+        ingredients = i;
+    }
+
+    @Override
+    public void showError(String m) {
         Toast.makeText(getContext(), m, Toast.LENGTH_SHORT).show();
     }
 
-    @Override public void onDestroy() {
+    @Override
+    public void onDestroy() {
         super.onDestroy();
         if (homePresenter instanceof HomePresenterImp) ((HomePresenterImp) homePresenter).dispose();
     }

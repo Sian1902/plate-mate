@@ -14,24 +14,50 @@ import com.example.plate_mate.R;
 import com.example.plate_mate.data.meal.model.Meal;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder> {
 
     private List<Meal> mealList;
     private final OnMealClickListener listener;
+    private final OnFavoriteClickListener favoriteListener;
+    private final Set<String> favoriteMealIds = new HashSet<>();
 
     public interface OnMealClickListener {
         void onMealClick(Meal meal);
     }
 
-    public MealAdapter(List<Meal> mealList, OnMealClickListener listener) {
+    public interface OnFavoriteClickListener {
+        void onFavoriteClick(Meal meal, boolean isFavorite);
+    }
+
+    public MealAdapter(List<Meal> mealList, OnMealClickListener listener, OnFavoriteClickListener favoriteListener) {
         this.mealList = mealList != null ? mealList : new ArrayList<>();
         this.listener = listener;
+        this.favoriteListener = favoriteListener;
     }
 
     public void updateMeals(List<Meal> newMeals) {
         this.mealList = newMeals != null ? newMeals : new ArrayList<>();
+        notifyDataSetChanged();
+    }
+
+    public void updateFavorites(Set<String> favoriteIds) {
+        this.favoriteMealIds.clear();
+        if (favoriteIds != null) {
+            this.favoriteMealIds.addAll(favoriteIds);
+        }
+        notifyDataSetChanged();
+    }
+
+    public void toggleFavorite(String mealId) {
+        if (favoriteMealIds.contains(mealId)) {
+            favoriteMealIds.remove(mealId);
+        } else {
+            favoriteMealIds.add(mealId);
+        }
         notifyDataSetChanged();
     }
 
@@ -46,7 +72,8 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
     @Override
     public void onBindViewHolder(@NonNull MealViewHolder holder, int position) {
         Meal meal = mealList.get(position);
-        holder.bind(meal, listener);
+        boolean isFavorite = favoriteMealIds.contains(meal.getIdMeal());
+        holder.bind(meal, isFavorite, listener, favoriteListener);
     }
 
     @Override
@@ -57,25 +84,40 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
     static class MealViewHolder extends RecyclerView.ViewHolder {
         private final ImageView ivMealImage;
         private final TextView tvMealName;
-        // Add other views as needed
+        private final ImageView ivFavorite;
 
         public MealViewHolder(@NonNull View itemView) {
             super(itemView);
             ivMealImage = itemView.findViewById(R.id.ivMealThumbnail);
             tvMealName = itemView.findViewById(R.id.tvMealTitle);
-            // Initialize other views
+            ivFavorite = itemView.findViewById(R.id.ivFavorite);
         }
 
-        public void bind(Meal meal, OnMealClickListener listener) {
+        public void bind(Meal meal, boolean isFavorite, OnMealClickListener listener, OnFavoriteClickListener favoriteListener) {
             tvMealName.setText(meal.getStrMeal());
 
             Glide.with(itemView.getContext())
                     .load(meal.getStrMealThumb())
                     .into(ivMealImage);
 
+            // Set favorite icon
+            if (isFavorite) {
+                ivFavorite.setImageResource(R.drawable.favorite);
+            } else {
+                ivFavorite.setImageResource(R.drawable.outline_favorite_24);
+            }
+
+            // Click on card to view details
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onMealClick(meal);
+                }
+            });
+
+            // Click on favorite icon to toggle
+            ivFavorite.setOnClickListener(v -> {
+                if (favoriteListener != null) {
+                    favoriteListener.onFavoriteClick(meal, isFavorite);
                 }
             });
         }
