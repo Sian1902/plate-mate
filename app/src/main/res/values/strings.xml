@@ -74,4 +74,15 @@
     <string name="logout">Logout</string>
     <string name="add_to_favorite">add to favorite</string>
 
+    <!--    Planner screen-->
+    <string name="today_schedule">Today\'s Schedule</string>
+    <string name="toggle_theme">Toggle Theme</string>
+    <string name="go_back">Go Back</string>
+    <string name="go_to_next">Go to next</string>
+    <string name="breakfast">Breakfast</string>
+    <string name="lunch">Lunch</string>
+    <string name="dinner">Dinner</string>
+    <string name="swap">swap</string>
+    <string name="add_snack_dessert">Add Snack or Dessert</string>
+
 </resources>

@@ -58,4 +58,9 @@
         <item name="android:fontFamily">@font/plus_jakarta_sans_medium</item>
         <item name="android:textColor">@color/nav_inactive</item>
     </style>
+
+    <style name="RoundedImage" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
 </resources>
