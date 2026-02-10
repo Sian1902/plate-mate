@@ -12,7 +12,7 @@ import com.example.plate_mate.data.meal.datasource.local.PlannedMealDao;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.data.meal.model.PlannedMeal;
 
-@Database(entities = {Meal.class, PlannedMeal.class}, version = 2, exportSchema = false)
+@Database(entities = {Meal.class, PlannedMeal.class}, version = 3, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class MealsDatabase extends RoomDatabase {
     private static volatile MealsDatabase INSTANCE;
@@ -28,7 +28,6 @@ public abstract class MealsDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     MealsDatabase.class,
                                     "meals_database")
-                            .fallbackToDestructiveMigration() // Handle version upgrade
                             .build();
                 }
             }
