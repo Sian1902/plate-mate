@@ -89,6 +89,91 @@
                     tools:text="alex.thompson@example.com" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- DATA SYNC SECTION -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="32dp"
+                android:letterSpacing="0.1"
+                android:text="CLOUD SYNC"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- Full Sync Button (Primary) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/fullSyncButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:text="Full Sync"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:icon="@drawable/baseline_sync_24"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:cornerRadius="12dp"
+                style="@style/Widget.Material3.Button"
+                android:backgroundTint="@color/primary"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Upload local data, then download from cloud"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginStart="4dp"/>
+
+            <!-- Row for Upload and Download -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:weightSum="2">
+
+                <!-- Upload Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/uploadDataButton"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:text="Upload"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:icon="@drawable/baseline_cloud_upload_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    app:cornerRadius="12dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textColor="@color/primary"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="2dp"/>
+
+                <!-- Download Button -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/downloadDataButton"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:text="Download"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    app:icon="@drawable/baseline_cloud_download_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp"
+                    app:cornerRadius="12dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:textColor="@color/primary"
+                    app:strokeColor="@color/primary"
+                    app:strokeWidth="2dp"/>
+            </LinearLayout>
+
+            <!-- APP SETTINGS SECTION -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -19,6 +19,10 @@ import com.example.plate_mate.data.auth.datastore.local.AuthPrefManager;
 import com.example.plate_mate.data.auth.datastore.remote.AuthRemoteDataSource;
 import com.example.plate_mate.data.auth.model.User;
 import com.example.plate_mate.data.auth.repo.AuthRepoImp;
+import com.example.plate_mate.data.meal.datasource.remote.FirebaseSyncDataSource;
+import com.example.plate_mate.data.meal.repository.MealRepoImp;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -29,6 +33,9 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
     private SwitchMaterial darkModeSwitch;
     private LinearLayout resetPasswordLayout;
     private LinearLayout logoutLayout;
+    private MaterialButton uploadDataButton;
+    private MaterialButton downloadDataButton;
+    private MaterialButton fullSyncButton;
     private ProgressBar progressBar;
 
     private ProfilePresenter presenter;
@@ -45,13 +52,13 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Initialize dependencies - AuthRepo is the only data source for presenter
         AuthRemoteDataSource remoteDataSource = new AuthRemoteDataSource();
         AuthPrefManager prefManager = AuthPrefManager.getInstance(requireContext());
         AuthRepoImp authRepo = new AuthRepoImp(remoteDataSource, prefManager);
+        MealRepoImp mealRepo = MealRepoImp.getInstance(requireContext());
+        FirebaseSyncDataSource firebaseSyncDataSource = new FirebaseSyncDataSource();
 
-        // Presenter only needs AuthRepo and RemoteDataSource
-        presenter = new ProfilePresenter(authRepo, remoteDataSource);
+        presenter = new ProfilePresenter(authRepo, remoteDataSource, mealRepo, firebaseSyncDataSource);
     }
 
     @Override
@@ -67,31 +74,58 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
     }
 
     private void initViews(View view) {
-        // Find views from layout
         nameEditText = view.findViewById(R.id.nameEditText);
         emailEditText = view.findViewById(R.id.emailEditText);
         darkModeSwitch = view.findViewById(R.id.darkModeSwitch);
         resetPasswordLayout = view.findViewById(R.id.resetPasswordLayout);
         logoutLayout = view.findViewById(R.id.logoutLayout);
+        uploadDataButton = view.findViewById(R.id.uploadDataButton);
+        downloadDataButton = view.findViewById(R.id.downloadDataButton);
+        fullSyncButton = view.findViewById(R.id.fullSyncButton);
         progressBar = view.findViewById(R.id.progressBar);
     }
 
     private void setupListeners() {
         darkModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Only trigger if it's a user action, not programmatic change
             if (buttonView.isPressed()) {
                 presenter.onDarkModeToggled(isChecked);
                 applyDarkMode(isChecked);
             }
         });
 
-        resetPasswordLayout.setOnClickListener(v -> {
-            presenter.onResetPasswordClicked();
-        });
+        resetPasswordLayout.setOnClickListener(v -> presenter.onResetPasswordClicked());
+        logoutLayout.setOnClickListener(v -> presenter.onLogoutClicked());
 
-        logoutLayout.setOnClickListener(v -> {
-            presenter.onLogoutClicked();
-        });
+        uploadDataButton.setOnClickListener(v -> showUploadConfirmationDialog());
+        downloadDataButton.setOnClickListener(v -> showDownloadConfirmationDialog());
+        fullSyncButton.setOnClickListener(v -> showFullSyncConfirmationDialog());
+    }
+
+    private void showUploadConfirmationDialog() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Upload to Firebase")
+                .setMessage("This will upload all your local favorites and planned meals to Firebase. Continue?")
+                .setPositiveButton("Upload", (dialog, which) -> presenter.onUploadDataClicked())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void showDownloadConfirmationDialog() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Download from Firebase")
+                .setMessage("This will download your favorites and planned meals from Firebase and merge with local data. Continue?")
+                .setPositiveButton("Download", (dialog, which) -> presenter.onDownloadDataClicked())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void showFullSyncConfirmationDialog() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Full Sync")
+                .setMessage("This will:\n1. Upload local data to Firebase\n2. Download Firebase data to device\n\nAll data will be synced. Continue?")
+                .setPositiveButton("Sync", (dialog, which) -> presenter.onFullSyncClicked())
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     @Override
@@ -99,8 +133,6 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         if (nameEditText != null && emailEditText != null) {
             nameEditText.setText(user.getName());
             emailEditText.setText(user.getEmail());
-
-            // Make fields read-only (optional)
             emailEditText.setEnabled(false);
         }
     }
@@ -110,11 +142,14 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         if (progressBar != null) {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         }
+        if (uploadDataButton != null) uploadDataButton.setEnabled(!isLoading);
+        if (downloadDataButton != null) downloadDataButton.setEnabled(!isLoading);
+        if (fullSyncButton != null) fullSyncButton.setEnabled(!isLoading);
     }
 
     @Override
     public void showError(String message) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -137,9 +172,35 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         }
     }
 
-    /**
-     * Apply dark mode to the app
-     */
+    @Override
+    public void showSyncProgress(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showSyncComplete(int favoritesCount, int plannedMealsCount) {
+        String message = String.format("Download complete!\n✓ %d favorites\n✓ %d planned meals",
+                favoritesCount, plannedMealsCount);
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Download Successful")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
+    @Override
+    public void showUploadComplete(int favoritesCount, int plannedMealsCount) {
+        String message = String.format("Upload complete!\n✓ %d favorites\n✓ %d planned meals",
+                favoritesCount, plannedMealsCount);
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Upload Successful")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
     private void applyDarkMode(boolean isEnabled) {
         if (isEnabled) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);

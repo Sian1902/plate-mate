@@ -119,8 +119,7 @@ class PlannedMealsAdapter extends RecyclerView.Adapter<PlannedMealsAdapter.ViewH
                     return "Lunch";
                 case DINNER:
                     return "Dinner";
-                case SNACK:
-                    return "Snack";
+
                 default:
                     return mealType.name();
             }
