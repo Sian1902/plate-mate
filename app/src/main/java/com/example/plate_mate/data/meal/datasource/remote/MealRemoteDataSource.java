@@ -33,7 +33,6 @@ public class MealRemoteDataSource {
         return mealService.getCategories();
     }
 
-    // Changed to Single for filter methods
     public Single<MealResponse> filterByIngredient(String ingredient) {
         return mealService.filterByIngredient(ingredient);
     }

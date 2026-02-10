@@ -55,53 +55,7 @@
         app:layout_constraintTop_toBottomOf="@id/meal_time"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:id="@+id/swap_btn"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        style="@style/Widget.Material3.Button.TextButton"-->
 
-<!--        app:icon="@drawable/rotate_right"-->
-<!--        app:iconGravity="start"-->
-<!--        app:iconPadding="8dp"-->
-<!--        app:iconTint="@color/black"-->
-
-<!--        android:text="@string/swap"-->
-<!--        android:textSize="20sp"-->
-<!--        app:fontFamily="@font/plus_jakarta_sans_bold"-->
-<!--        android:textColor="@color/black"-->
-
-<!--        android:layout_marginTop="16dp"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/meal_time"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:id="@+id/swap_btn"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/meal_time"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:drawableStart="@drawable/rotate_right"-->
-<!--        android:drawableTint="@color/black"-->
-<!--        android:text="@string/swap"-->
-<!--        app:fontFamily="@font/plus_jakarta_sans_bold"-->
-<!--        android:drawablePadding="8dp"-->
-<!--        android:textColor="@color/black"-->
-<!--        />-->
-    <ImageButton
-        android:id="@+id/edit_btn"
-        android:padding="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        app:layout_constraintStart_toEndOf="@id/swap_btn"
-        app:layout_constraintTop_toTopOf="@id/swap_btn"
-        app:layout_constraintBottom_toBottomOf="@id/swap_btn"
-        android:background="@drawable/edit_btn_bg"
-        android:layout_marginStart="8dp"
-        app:tint="@color/text_primary"
-        android:src="@drawable/edit_"/>
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/meal_image"

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.example.plate_mate.data.meal.datasource.local.FavoriteLocalDataStore;
 import com.example.plate_mate.data.meal.datasource.local.MealSharedPrefManager;
+import com.example.plate_mate.data.meal.datasource.local.PlannedMealLocalDataStore;
 import com.example.plate_mate.data.meal.datasource.remote.MealRemoteDataSource;
 import com.example.plate_mate.data.meal.model.AreaResponse;
 import com.example.plate_mate.data.meal.model.CategorieListResponse;
@@ -11,6 +12,8 @@ import com.example.plate_mate.data.meal.model.IngredientResponse;
 import com.example.plate_mate.data.meal.model.InitialMealData;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.data.meal.model.MealResponse;
+import com.example.plate_mate.data.meal.model.MealType;
+import com.example.plate_mate.data.meal.model.PlannedMeal;
 
 import java.util.List;
 
@@ -24,12 +27,13 @@ public class MealRepoImp implements MealRepository {
     private final MealRemoteDataSource remoteDataSource;
     private final MealSharedPrefManager dataStoreManager;
     private final FavoriteLocalDataStore favoriteLocalDataStore;
-
+    private final PlannedMealLocalDataStore plannedMealLocalDataStore;
 
     private MealRepoImp(Context context) {
         this.remoteDataSource = new MealRemoteDataSource();
         this.dataStoreManager = MealSharedPrefManager.getInstance(context);
         this.favoriteLocalDataStore = new FavoriteLocalDataStore(context);
+        this.plannedMealLocalDataStore = new PlannedMealLocalDataStore(context);
     }
 
     public static MealRepoImp getInstance(Context context) {
@@ -88,7 +92,6 @@ public class MealRepoImp implements MealRepository {
         return remoteDataSource.getMealById(id).onErrorReturnItem(new MealResponse());
     }
 
-    // Favorites implementation
     @Override
     public Completable insertFavorite(Meal favorite) {
         return Completable.fromAction(() -> favoriteLocalDataStore.insertFavorite(favorite))
@@ -110,6 +113,90 @@ public class MealRepoImp implements MealRepository {
     @Override
     public Completable deleteFavorite(String mealId) {
         return Completable.fromAction(() -> favoriteLocalDataStore.deleteFavorite(mealId))
+                .subscribeOn(Schedulers.io());
+    }
+    @Override
+    public Completable insertPlannedMeal(PlannedMeal plannedMeal) {
+        return Completable.fromAction(() -> plannedMealLocalDataStore.insertPlannedMeal(plannedMeal))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable insertPlannedMeals(List<PlannedMeal> plannedMeals) {
+        return Completable.fromAction(() -> plannedMealLocalDataStore.insertPlannedMeals(plannedMeals))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable updatePlannedMeal(PlannedMeal plannedMeal) {
+        return Completable.fromAction(() -> plannedMealLocalDataStore.updatePlannedMeal(plannedMeal))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable deletePlannedMeal(PlannedMeal plannedMeal) {
+        return Completable.fromAction(() -> plannedMealLocalDataStore.deletePlannedMeal(plannedMeal))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable deletePlannedMealByDateAndType(Long date, MealType mealType) {
+        return Completable.fromAction(() ->
+                        plannedMealLocalDataStore.deletePlannedMealByDateAndType(date, mealType))
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Observable<List<PlannedMeal>> getPlannedMealsForNextSevenDays() {
+        return plannedMealLocalDataStore.getPlannedMealsForNextSevenDays()
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<List<PlannedMeal>> getPlannedMealsByDate(Long date) {
+        return plannedMealLocalDataStore.getPlannedMealsByDate(date)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<PlannedMeal> getPlannedMealByDateAndType(Long date, MealType mealType) {
+        return plannedMealLocalDataStore.getPlannedMealByDateAndType(date, mealType)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Boolean> isPlannedMealExists(Long date, MealType mealType) {
+        return plannedMealLocalDataStore.isPlannedMealExists(date, mealType)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Observable<List<PlannedMeal>> getAllPlannedMeals() {
+        return plannedMealLocalDataStore.getAllPlannedMeals()
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable cleanupOldPlannedMeals() {
+        return Completable.fromAction(() -> plannedMealLocalDataStore.cleanupOldPlannedMeals())
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Completable deleteAllPlannedMeals() {
+        return Completable.fromAction(() -> plannedMealLocalDataStore.deleteAllPlannedMeals())
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<Integer> getPlannedMealsCount() {
+        return plannedMealLocalDataStore.getPlannedMealsCount()
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Observable<List<PlannedMeal>> getPlannedMealsByType(MealType mealType) {
+        return plannedMealLocalDataStore.getPlannedMealsByType(mealType)
                 .subscribeOn(Schedulers.io());
     }
 }
