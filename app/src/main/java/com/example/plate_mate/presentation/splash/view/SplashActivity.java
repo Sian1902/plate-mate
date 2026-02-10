@@ -1,9 +1,11 @@
 package com.example.plate_mate.presentation.splash.view;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +22,7 @@ import com.example.plate_mate.data.auth.datastore.remote.AuthRemoteDataSource;
 import com.example.plate_mate.data.auth.repo.AuthRepo;
 import com.example.plate_mate.data.auth.repo.AuthRepoImp;
 import com.example.plate_mate.data.meal.model.InitialMealData;
+import com.example.plate_mate.presentation.onboarding.view.OnboardingActivity;
 import com.example.plate_mate.presentation.splash.presenter.SplashPresenter;
 import com.example.plate_mate.presentation.splash.presenter.SplashPresenterImp;
 import com.example.plate_mate.util.DarkModeHelper;
@@ -30,7 +33,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
-
+    public static final String PREF_NAME = "OnboardingPrefs";
+    public static final String KEY_ONBOARDING_COMPLETED = "onboarding_completed";
+    private static final long MIN_SPLASH_DURATION_MS = 1800; // 1.8 seconds
     private Disposable splashDisposable;
     private SplashPresenter splashPresenter;
     private AuthRepo authRepo;
@@ -59,7 +64,22 @@ public class SplashActivity extends AppCompatActivity {
         setupAnimation(blurAnimBottom, brandColor);
         setupAnimation(progressBar, brandColor);
 
+        long startTime = System.currentTimeMillis();
+
         splashPresenter = new SplashPresenterImp(getApplicationContext());
+
+        // Check onboarding first
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        boolean onboardingCompleted = prefs.getBoolean(KEY_ONBOARDING_COMPLETED, false);
+        if (!onboardingCompleted) {
+            long elapsed = System.currentTimeMillis() - startTime;
+            long delay = Math.max(0, MIN_SPLASH_DURATION_MS - elapsed);
+
+            new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
+                goToOnboarding();
+            }, delay);
+            return;
+        }
 
         // Check if user is already logged in using AuthRepo
         if (isUserLoggedIn()) {
@@ -78,6 +98,21 @@ public class SplashActivity extends AppCompatActivity {
         return authRepo.isUserLoggedIn();
     }
 
+    private void goToOnboarding(){
+        splashDisposable = splashPresenter.preloadData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        data -> {
+                            Log.d(TAG, "Preload completed successfully while in onboarding");
+                        },
+                        error -> {
+                            Log.e(TAG, "Preload failed during onboarding", error);
+                        }
+                );
+        startActivity(new Intent(this, OnboardingActivity.class));
+        finish();
+    }
     private void preloadDataAndNavigateToMain() {
         Log.d(TAG, "Starting to preload data for logged-in user...");
 

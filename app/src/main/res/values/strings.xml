@@ -84,5 +84,14 @@
     <string name="dinner">Dinner</string>
     <string name="swap">swap</string>
     <string name="add_snack_dessert">Add Snack or Dessert</string>
+    <string name="skip">Skip</string>
+    <string name="next">Next</string>
+    <string name="get_started">Get Started</string>
+    <string name="onboarding_page_1_description">Organize your weekly meals in seconds and save time every day.</string>
+    <string name="onboarding_page_1_title2">Made Easy</string>
+    <string name="onboarding_page1_title1">Meal Planning</string>
+    <string name="onboarding_page_2_description">Get your meals on time with our smart scheduling and reminders.</string>
+    <string name="onboarding_page_2_title2">a Meal</string>
+    <string name="onboarding_page2_title1">Never Miss</string>
 
 </resources>

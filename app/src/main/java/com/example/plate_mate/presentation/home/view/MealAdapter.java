@@ -100,21 +100,18 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
                     .load(meal.getStrMealThumb())
                     .into(ivMealImage);
 
-            // Set favorite icon
             if (isFavorite) {
                 ivFavorite.setImageResource(R.drawable.favorite);
             } else {
                 ivFavorite.setImageResource(R.drawable.outline_favorite_24);
             }
 
-            // Click on card to view details
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onMealClick(meal);
                 }
             });
 
-            // Click on favorite icon to toggle
             ivFavorite.setOnClickListener(v -> {
                 if (favoriteListener != null) {
                     favoriteListener.onFavoriteClick(meal, isFavorite);
