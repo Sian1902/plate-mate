@@ -17,12 +17,13 @@ import com.example.plate_mate.R;
 import com.example.plate_mate.data.auth.datastore.local.AuthPrefManager;
 import com.example.plate_mate.data.auth.datastore.remote.AuthRemoteDataSource;
 import com.example.plate_mate.data.auth.repo.AuthRepoImp;
+import com.example.plate_mate.presentation.signup.contract.SignUpContract;
 import com.example.plate_mate.presentation.signup.presenter.SignUpPresenterImp;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class SignUpFragment extends Fragment implements SignUpView {
+public class SignUpFragment extends Fragment implements SignUpContract.View {
 
-    private SignUpPresenterImp presenter;
+    private SignUpContract.Presenter presenter;
     private TextInputLayout tilName, tilEmail, tilPassword;
     private ProgressBar progressBar;
     private View btnSignUp, btnBack, btnContinueAsGuest;
@@ -45,10 +46,8 @@ public class SignUpFragment extends Fragment implements SignUpView {
                 this
         );
 
-        // Initialize views
         initViews(view);
 
-        // Setup listeners
         setupListeners();
     }
 
@@ -79,12 +78,10 @@ public class SignUpFragment extends Fragment implements SignUpView {
     }
 
     private void onSignUpClicked() {
-        // Clear previous errors
         tilName.setError(null);
         tilEmail.setError(null);
         tilPassword.setError(null);
 
-        // Get input values
         String name = tilName.getEditText() != null ?
                 tilName.getEditText().getText().toString().trim() : "";
         String email = tilEmail.getEditText() != null ?
@@ -92,12 +89,10 @@ public class SignUpFragment extends Fragment implements SignUpView {
         String password = tilPassword.getEditText() != null ?
                 tilPassword.getEditText().getText().toString().trim() : "";
 
-        // Validate inputs locally first
         if (!validateInputs(name, email, password)) {
             return;
         }
 
-        // Call presenter to register
         presenter.register(name, email, password);
     }
 
@@ -142,7 +137,6 @@ public class SignUpFragment extends Fragment implements SignUpView {
 
     @Override
     public void onRegistrationError(String message) {
-        // Parse error message for better UX
         String userMessage = parseErrorMessage(message);
         Toast.makeText(requireContext(), userMessage, Toast.LENGTH_LONG).show();
     }
@@ -153,7 +147,6 @@ public class SignUpFragment extends Fragment implements SignUpView {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         }
 
-        // Disable/enable buttons during loading
         if (btnSignUp != null) {
             btnSignUp.setEnabled(!isLoading);
         }
@@ -165,9 +158,6 @@ public class SignUpFragment extends Fragment implements SignUpView {
         }
     }
 
-    /**
-     * Parse Firebase error messages to user-friendly messages
-     */
     private String parseErrorMessage(String errorMessage) {
         if (errorMessage == null) {
             return "Registration failed. Please try again.";

@@ -1,7 +1,7 @@
 package com.example.plate_mate.data.meal.datasource.remote;
 
 import com.example.plate_mate.data.meal.model.AreaResponse;
-import com.example.plate_mate.data.meal.model.CategorieListResponse;
+import com.example.plate_mate.data.meal.model.CategoryListResponse;
 import com.example.plate_mate.data.meal.model.CategoryResponse;
 import com.example.plate_mate.data.meal.model.IngredientResponse;
 import com.example.plate_mate.data.meal.model.MealResponse;
@@ -28,7 +28,7 @@ public interface MealService {
     Observable<CategoryResponse> getCategories();
 
     @GET("list.php?c=list")
-    Observable<CategorieListResponse> listCategories();
+    Observable<CategoryListResponse> listCategories();
 
     @GET("list.php?a=list")
     Observable<AreaResponse> listAreas();

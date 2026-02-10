@@ -6,7 +6,7 @@ import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.TypeConverters;
 
-import com.example.plate_mate.data.database.Converters;
+import com.example.plate_mate.data.database.converters.MealTypeConverter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity(tableName = "planned_meals", primaryKeys = {"date", "meal_type"})
 @NoArgsConstructor
 @AllArgsConstructor
-@TypeConverters(Converters.class)
+@TypeConverters(MealTypeConverter.class)
 public class PlannedMeal {
 
     @NonNull

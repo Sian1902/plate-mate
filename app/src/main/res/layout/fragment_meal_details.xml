@@ -12,8 +12,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="20dp">
-
-        <!-- Header with Back Button and Title -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -63,8 +61,6 @@
                 tools:text="Delicious Spaghetti Carbonara with Extra Long Name" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- YouTube Player Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="220dp"
@@ -78,8 +74,6 @@
                 android:layout_height="match_parent"
                 app:autoPlay="false" />
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- Ingredients Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -99,8 +93,6 @@
             android:textColor="@color/text_primary"
             android:textSize="15sp"
             tools:text="• 200g spaghetti\n• 100g pancetta\n• 2 large eggs\n• 50g parmesan cheese\n• Freshly ground black pepper\n• Salt to taste" />
-
-        <!-- Instructions Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

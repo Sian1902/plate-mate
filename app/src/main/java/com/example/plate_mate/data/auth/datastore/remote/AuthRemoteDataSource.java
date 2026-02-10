@@ -41,9 +41,6 @@ public class AuthRemoteDataSource {
         );
     }
 
-    /**
-     * Update user profile (display name, photo URL, etc.)
-     */
     public Completable updateUserProfile(String displayName, String photoUrl) {
         return Completable.create(emitter -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -67,9 +64,6 @@ public class AuthRemoteDataSource {
         });
     }
 
-    /**
-     * Update only display name
-     */
     public Completable updateDisplayName(String displayName) {
         return updateUserProfile(displayName, null);
     }

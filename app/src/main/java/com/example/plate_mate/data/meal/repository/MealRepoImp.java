@@ -2,12 +2,12 @@ package com.example.plate_mate.data.meal.repository;
 
 import android.content.Context;
 
-import com.example.plate_mate.data.meal.datasource.local.FavoriteLocalDataStore;
-import com.example.plate_mate.data.meal.datasource.local.MealSharedPrefManager;
-import com.example.plate_mate.data.meal.datasource.local.PlannedMealLocalDataStore;
+import com.example.plate_mate.data.meal.datasource.local.favorit.FavoriteLocalDataStore;
+import com.example.plate_mate.data.meal.datasource.local.offline.MealSharedPrefManager;
+import com.example.plate_mate.data.meal.datasource.local.plannned.PlannedMealLocalDataStore;
 import com.example.plate_mate.data.meal.datasource.remote.MealRemoteDataSource;
 import com.example.plate_mate.data.meal.model.AreaResponse;
-import com.example.plate_mate.data.meal.model.CategorieListResponse;
+import com.example.plate_mate.data.meal.model.CategoryListResponse;
 import com.example.plate_mate.data.meal.model.IngredientResponse;
 import com.example.plate_mate.data.meal.model.InitialMealData;
 import com.example.plate_mate.data.meal.model.Meal;
@@ -50,7 +50,7 @@ public class MealRepoImp implements MealRepository {
     @Override
     public Observable<InitialMealData> preloadInitialData() {
         return Observable.zip(
-                remoteDataSource.listCategories().onErrorReturnItem(new CategorieListResponse()),
+                remoteDataSource.listCategories().onErrorReturnItem(new CategoryListResponse()),
                 remoteDataSource.listIngredients().onErrorReturnItem(new IngredientResponse()),
                 remoteDataSource.listAreas().onErrorReturnItem(new AreaResponse()),
                 remoteDataSource.searchMealByFirstLetter("a").onErrorReturnItem(new MealResponse()),

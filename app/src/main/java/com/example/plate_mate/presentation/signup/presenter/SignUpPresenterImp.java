@@ -1,18 +1,18 @@
 package com.example.plate_mate.presentation.signup.presenter;
 
 import com.example.plate_mate.data.auth.repo.AuthRepo;
-import com.example.plate_mate.presentation.signup.view.SignUpView;
+import com.example.plate_mate.presentation.signup.contract.SignUpContract;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class SignUpPresenterImp implements SignUpPresenter {
+public class SignUpPresenterImp implements SignUpContract.Presenter {
     private final AuthRepo repo;
-    private SignUpView view;
+    private SignUpContract.View view;
     private final CompositeDisposable disposables = new CompositeDisposable();
 
-    public SignUpPresenterImp(AuthRepo repo, SignUpView view) {
+    public SignUpPresenterImp(AuthRepo repo, SignUpContract.View view) {
         this.repo = repo;
         this.view = view;
     }

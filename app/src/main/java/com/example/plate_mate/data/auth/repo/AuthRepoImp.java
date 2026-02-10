@@ -23,9 +23,6 @@ public class AuthRepoImp implements AuthRepo {
 
     @Override
     public Completable register(String name, String email, String password) {
-        // Step 1: Create user account
-        // Step 2: Update display name in Firebase
-        // Step 3: Save session locally
         return remoteDataSource.signUp(email, password)
                 .andThen(remoteDataSource.updateDisplayName(name))
                 .doOnComplete(() -> saveSessionLocally(false));

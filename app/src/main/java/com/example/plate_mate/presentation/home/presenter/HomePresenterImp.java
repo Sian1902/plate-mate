@@ -4,7 +4,8 @@ import android.content.Context;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.data.meal.repository.MealRepoImp;
 import com.example.plate_mate.data.meal.repository.MealRepository;
-import com.example.plate_mate.presentation.home.view.HomeView;
+import com.example.plate_mate.presentation.home.contract.HomeContract;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,14 +20,14 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
-public class HomePresenterImp implements HomePresenter {
+public class HomePresenterImp implements HomeContract.Presenter {
     private MealRepository mealRepo;
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final CompositeDisposable filterDisposables = new CompositeDisposable();
     private Disposable updateDisposable;
 
     private final PublishSubject<String> searchSubject = PublishSubject.create();
-    private HomeView homeView;
+    private HomeContract.View homeView;
 
     private List<Meal> initialMeals = new ArrayList<>();
     private List<Meal> categoryResults = new ArrayList<>();
@@ -40,7 +41,7 @@ public class HomePresenterImp implements HomePresenter {
     private String currentIngredient = null;
     private String currentSearchQuery = "";
 
-    public HomePresenterImp(Context context, HomeView homeView) {
+    public HomePresenterImp(Context context, HomeContract.View homeView) {
         this.mealRepo = MealRepoImp.getInstance(context);
         this.homeView = homeView;
         setupSearchDebounce();
@@ -60,11 +61,9 @@ public class HomePresenterImp implements HomePresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    // 1. Critical Check: Is the view still attached?
                     if (homeView == null) return;
 
                     if (data != null) {
-                        // 2. Safe check for Filter Options
                         if (data.getCategories() != null && data.getAreas() != null && data.getIngredients() != null) {
                             homeView.setFilterOptions(
                                     data.getCategories().getMeal() != null ? data.getCategories().getMeal() : new ArrayList<>(),
@@ -72,26 +71,20 @@ public class HomePresenterImp implements HomePresenter {
                                     data.getIngredients().getMeals() != null ? data.getIngredients().getMeals() : new ArrayList<>()
                             );
                         }
-
-                        // 3. Safe check for Initial Meal List
                         if (data.getMeals() != null && data.getMeals().getMeals() != null) {
                             initialMeals = new ArrayList<>(data.getMeals().getMeals());
                         } else {
                             initialMeals = new ArrayList<>();
                         }
 
-                        // 4. Safe check for Hero Meal (Random Meal)
                         Meal heroMeal = null;
                         if (data.getRandomMeal() != null &&
                                 data.getRandomMeal().getMeals() != null &&
                                 !data.getRandomMeal().getMeals().isEmpty()) {
                             heroMeal = data.getRandomMeal().getMeals().get(0);
                         }
-
-                        // 5. Update UI only if we have at least an empty list to show
                         homeView.setupUi(initialMeals, heroMeal);
 
-                        // 6. Load favorites after setting up UI
                         loadFavorites();
                     }
                 }, e -> {
@@ -130,21 +123,17 @@ public class HomePresenterImp implements HomePresenter {
         boolean isFavorite = favoriteMealIds.contains(meal.getIdMeal());
 
         if (isFavorite) {
-            // Remove from favorites
             removeFavorite(meal.getIdMeal());
         } else {
-            // Check if meal is complete before adding
             if (isMealComplete(meal)) {
                 addFavorite(meal);
             } else {
-                // Fetch complete meal data first
                 fetchCompleteMealAndAddToFavorites(meal.getIdMeal());
             }
         }
     }
 
     private boolean isMealComplete(Meal meal) {
-        // Check if essential fields are present
         return meal.getStrInstructions() != null && !meal.getStrInstructions().trim().isEmpty();
     }
 

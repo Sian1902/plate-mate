@@ -16,19 +16,20 @@ import androidx.navigation.Navigation;
 
 import com.example.plate_mate.R;
 import com.example.plate_mate.data.meal.model.Meal;
+import com.example.plate_mate.presentation.mealdetails.contract.MealDetailsContract;
 import com.example.plate_mate.presentation.mealdetails.presenter.MealDetailsPresenter;
 import com.google.android.material.card.MaterialCardView;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
-public class MealDetailsFragment extends Fragment implements MealDetailsView {
+public class MealDetailsFragment extends Fragment implements MealDetailsContract.View {
 
     private TextView tvTitle, tvIngredients, tvInstructions;
     private YouTubePlayerView youtubePlayerView;
     private MaterialCardView videoCard;
     private NavVisibilityCallback navVisibilityCallback;
-    private MealDetailsPresenter presenter;
+    private MealDetailsContract.Presenter presenter;
 
     public interface NavVisibilityCallback {
         void setNavigationVisibility(boolean isVisible);
@@ -68,7 +69,6 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
         if (getArguments() != null) {
             Meal meal = (Meal) getArguments().getSerializable("selected_meal");
             if (meal != null) {
-                // Check if the meal object already contains detailed data
                 if (hasFullData(meal)) {
                     showMealDetails(meal);
                 } else {
@@ -78,13 +78,9 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
         }
     }
 
-    /**
-     * Checks if the meal object already has instructions and ingredients.
-     * This prevents redundant API calls for meals coming from search or random results.
-     */
     private boolean hasFullData(Meal meal) {
         String instructions = meal.getStrInstructions();
-        String firstIngredient = meal.getStrIngredient(1); // Using the specific getter if available, or getStrIngredient(1)
+        String firstIngredient = meal.getStrIngredient(1);
 
         boolean hasInstructions = instructions != null && !instructions.trim().isEmpty();
         boolean hasIngredients = firstIngredient != null && !firstIngredient.trim().isEmpty();

@@ -12,15 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.plate_mate.AuthActivity;
-import com.example.plate_mate.MainActivity;
 import com.example.plate_mate.R;
 import com.example.plate_mate.presentation.onboarding.OnboardingAdapter;
-import com.example.plate_mate.presentation.onboarding.presenter.OnboardingPresenter;
+import com.example.plate_mate.presentation.onboarding.contract.OnboardingContract;
 import com.example.plate_mate.presentation.onboarding.presenter.OnboardingPresenterImp;
-import com.example.plate_mate.presentation.splash.view.SplashActivity;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
-public class OnboardingActivity extends AppCompatActivity implements OnboardingView{
+public class OnboardingActivity extends AppCompatActivity implements OnboardingContract.View {
 
     private ViewPager2 viewPager;
     private DotsIndicator dotsIndicator;
@@ -28,7 +26,7 @@ public class OnboardingActivity extends AppCompatActivity implements OnboardingV
     private ImageButton btnBack;
     private TextView tvSkip;
 
-    private OnboardingPresenter presenter;
+    private OnboardingContract.Presenter presenter;
     private OnboardingAdapter adapter;
 
     int currentPosition = 0;

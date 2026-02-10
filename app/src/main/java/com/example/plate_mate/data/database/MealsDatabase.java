@@ -7,13 +7,14 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import com.example.plate_mate.data.meal.datasource.local.FavoriteDao;
-import com.example.plate_mate.data.meal.datasource.local.PlannedMealDao;
+import com.example.plate_mate.data.database.converters.MealTypeConverter;
+import com.example.plate_mate.data.meal.datasource.local.favorit.FavoriteDao;
+import com.example.plate_mate.data.meal.datasource.local.plannned.PlannedMealDao;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.data.meal.model.PlannedMeal;
 
 @Database(entities = {Meal.class, PlannedMeal.class}, version = 3, exportSchema = false)
-@TypeConverters({Converters.class})
+@TypeConverters({MealTypeConverter.class})
 public abstract class MealsDatabase extends RoomDatabase {
     private static volatile MealsDatabase INSTANCE;
 

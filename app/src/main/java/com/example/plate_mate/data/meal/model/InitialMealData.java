@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InitialMealData {
-    private CategorieListResponse categories;
+    private CategoryListResponse categories;
     private IngredientResponse ingredients;
     private AreaResponse areas;
     private MealResponse meals;

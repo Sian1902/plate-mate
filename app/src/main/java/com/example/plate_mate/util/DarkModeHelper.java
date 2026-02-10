@@ -9,10 +9,6 @@ import com.example.plate_mate.data.auth.datastore.remote.AuthRemoteDataSource;
 import com.example.plate_mate.data.auth.repo.AuthRepo;
 import com.example.plate_mate.data.auth.repo.AuthRepoImp;
 
-/**
- * Utility class to manage dark mode across the application
- * Uses AuthRepo for proper layering
- */
 public class DarkModeHelper {
 
     public static void applyDarkMode(Context context) {

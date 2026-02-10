@@ -22,20 +22,20 @@ import com.example.plate_mate.data.meal.model.Area;
 import com.example.plate_mate.data.meal.model.Category;
 import com.example.plate_mate.data.meal.model.Ingredient;
 import com.example.plate_mate.data.meal.model.Meal;
-import com.example.plate_mate.presentation.home.presenter.HomePresenter;
+import com.example.plate_mate.presentation.home.contract.HomeContract;
 import com.example.plate_mate.presentation.home.presenter.HomePresenterImp;
 import com.google.android.material.chip.Chip;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class HomeFragment extends Fragment implements HomeView {
+public class HomeFragment extends Fragment implements HomeContract.View {
     private RecyclerView rvMeals;
     private MealAdapter adapter;
     private ImageView ivHeroImage;
     private TextView tvHeroTitle;
     private View layoutHeroMeal;
-    private HomePresenter homePresenter;
+    private HomeContract.Presenter homePresenter;
     private List<Category> categories;
     private List<Area> areas;
     private List<Ingredient> ingredients;
@@ -148,7 +148,6 @@ public class HomeFragment extends Fragment implements HomeView {
 
     private void onFavoriteClick(Meal meal, boolean currentlyFavorite) {
         homePresenter.toggleFavorite(meal);
-        // Update the adapter immediately for better UX
         if (adapter != null) {
             adapter.toggleFavorite(meal.getIdMeal());
         }

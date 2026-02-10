@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Spacing -->
     <dimen name="spacing_xs">4dp</dimen>
     <dimen name="spacing_sm">8dp</dimen>
     <dimen name="spacing_md">12dp</dimen>
@@ -8,38 +7,30 @@
     <dimen name="spacing_xl">24dp</dimen>
     <dimen name="spacing_xxl">32dp</dimen>
 
-    <!-- Corner Radius -->
     <dimen name="corner_radius_sm">8dp</dimen>
     <dimen name="corner_radius_md">12dp</dimen>
     <dimen name="corner_radius_lg">16dp</dimen>
     <dimen name="corner_radius_full">999dp</dimen>
 
-    <!-- Elevation -->
     <dimen name="elevation_sm">2dp</dimen>
     <dimen name="elevation_md">4dp</dimen>
     <dimen name="elevation_lg">8dp</dimen>
 
-    <!-- Image Sizes -->
     <dimen name="avatar_size">40dp</dimen>
     <dimen name="meal_thumbnail_size">64dp</dimen>
     <dimen name="icon_size_sm">20dp</dimen>
     <dimen name="icon_size_md">24dp</dimen>
     <dimen name="icon_size_lg">28dp</dimen>
 
-    <!-- List Item Heights -->
     <dimen name="list_item_min_height">80dp</dimen>
 
-    <!-- Bottom Navigation -->
     <dimen name="bottom_nav_height">64dp</dimen>
     <dimen name="bottom_nav_icon_size">24dp</dimen>
 
-    <!-- App Bar -->
     <dimen name="app_bar_height">56dp</dimen>
 
-    <!-- Hero Card -->
     <dimen name="hero_card_height">220dp</dimen>
 
-    <!-- Chip Height -->
     <dimen name="chip_height">36dp</dimen>
     <dimen name="chip_min_width">80dp</dimen>
 </resources>

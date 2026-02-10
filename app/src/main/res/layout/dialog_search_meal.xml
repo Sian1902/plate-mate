@@ -9,13 +9,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Search for a Meal"
+        android:text="@string/search_for_a_meal"
         android:textSize="20sp"
         android:fontFamily="@font/plus_jakarta_sans_bold"
         android:textColor="@color/text_primary"
         android:layout_marginBottom="16dp"/>
 
-    <!-- Simple EditText with icon instead of TextInputLayout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,7 +35,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Search meal name..."
+            android:hint="@string/search_meal_name"
             android:textColorHint="@color/text_tertiary"
             android:textColor="@color/text_primary"
             android:fontFamily="@font/plus_jakarta_sans"
@@ -52,7 +51,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:visibility="gone"
             app:tint="@color/text_tertiary"
-            android:contentDescription="Clear search"/>
+            android:contentDescription="@string/clear_search"/>
 
     </LinearLayout>
 
@@ -68,7 +67,7 @@
         android:id="@+id/empty_search_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Type to search for meals..."
+        android:text="@string/type_to_search_for_meals"
         android:textAlignment="center"
         android:textColor="@color/text_tertiary"
         android:fontFamily="@font/plus_jakarta_sans"
@@ -92,8 +91,8 @@
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cancel"
-            style="@style/Widget.Material3.Button.TextButton"/>
+            android:text="@string/cancel"
+            />
 
     </LinearLayout>
 

@@ -2,18 +2,17 @@ package com.example.plate_mate.presentation.onboarding.presenter;
 
 import com.example.plate_mate.R;
 import com.example.plate_mate.presentation.onboarding.OnboardingItem;
-import com.example.plate_mate.presentation.onboarding.view.OnboardingView;
+import com.example.plate_mate.presentation.onboarding.contract.OnboardingContract;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class OnboardingPresenterImp implements OnboardingPresenter{
-    private final OnboardingView view;
+public class OnboardingPresenterImp implements OnboardingContract.Presenter {
+    private final OnboardingContract.View view;
     private int currentPosition = 0;
     private List<OnboardingItem> items;
 
-    public OnboardingPresenterImp(OnboardingView view) {
+    public OnboardingPresenterImp(OnboardingContract.View view) {
         this.view = view;
     }
 
@@ -24,7 +23,7 @@ public class OnboardingPresenterImp implements OnboardingPresenter{
         items.add(new OnboardingItem(R.drawable.onboarding_page2, R.string.onboarding_page2_title1, R.string.onboarding_page_2_title2, R.string.onboarding_page_2_description));
 
         view.setCurrentPosition(0);
-        onPageSelected(0); // initial state
+        onPageSelected(0);
     }
 
     @Override

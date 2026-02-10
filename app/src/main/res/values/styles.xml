@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Shape Appearances -->
+
     <style name="ShapeAppearance.App.MediumComponent" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">@dimen/corner_radius_md</item>
@@ -11,7 +11,6 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <!-- Chip Styles -->
     <style name="Widget.App.Chip.Filter" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -46,7 +45,6 @@
         <item name="closeIconVisible">false</item>
     </style>
 
-    <!-- Bottom Navigation Text Appearances -->
     <style name="TextAppearance.App.BottomNav.Active" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">10sp</item>
         <item name="android:fontFamily">@font/plus_jakarta_sans_bold</item>

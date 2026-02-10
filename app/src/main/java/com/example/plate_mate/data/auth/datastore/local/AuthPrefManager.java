@@ -51,11 +51,11 @@ public class AuthPrefManager {
         editor.apply();
     }
     public void setDarkMode(boolean isEnabled) {
-        editor.putBoolean(KEY_DARK_MODE, isEnabled); //
-        editor.apply(); //
+        editor.putBoolean(KEY_DARK_MODE, isEnabled);
+        editor.apply();
     }
 
     public boolean isDarkModeEnabled() {
-        return sharedPreferences.getBoolean(KEY_DARK_MODE, false); //
+        return sharedPreferences.getBoolean(KEY_DARK_MODE, false);
     }
 }

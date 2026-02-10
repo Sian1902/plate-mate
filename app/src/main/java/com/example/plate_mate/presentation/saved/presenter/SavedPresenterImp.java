@@ -5,7 +5,7 @@ import android.content.Context;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.data.meal.repository.MealRepoImp;
 import com.example.plate_mate.data.meal.repository.MealRepository;
-import com.example.plate_mate.presentation.saved.view.SavedView;
+import com.example.plate_mate.presentation.saved.contract.SavedContract;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,35 +14,31 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class SavedPresenterImp implements SavedPresenter {
+public class SavedPresenterImp implements SavedContract.Presenter {
     private final MealRepository mealRepo;
-    private final SavedView savedView;
+    private final SavedContract.View savedView;
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final Set<String> favoriteMealIds = new HashSet<>();
 
-    public SavedPresenterImp(Context context, SavedView savedView) {
+    public SavedPresenterImp(Context context, SavedContract.View savedView) {
         this.mealRepo = MealRepoImp.getInstance(context);
         this.savedView = savedView;
     }
 
     @Override
     public void loadFavorites() {
-        // Subscribe to favorites observable to get real-time updates
         disposables.add(mealRepo.getAllFavorites()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(favorites -> {
                     if (savedView == null) return;
 
-                    // Update favorite IDs set
                     favoriteMealIds.clear();
                     for (Meal meal : favorites) {
                         if (meal.getIdMeal() != null) {
                             favoriteMealIds.add(meal.getIdMeal());
                         }
                     }
-
-                    // Show or hide empty state based on list
                     if (favorites.isEmpty()) {
                         savedView.showEmptyState();
                     } else {
@@ -50,7 +46,6 @@ public class SavedPresenterImp implements SavedPresenter {
                         savedView.showFavorites(favorites);
                     }
 
-                    // Update favorite states in adapter
                     savedView.updateFavorites(favoriteMealIds);
 
                 }, error -> {
@@ -63,8 +58,6 @@ public class SavedPresenterImp implements SavedPresenter {
     @Override
     public void toggleFavorite(Meal meal) {
         if (meal == null || meal.getIdMeal() == null) return;
-
-        // Since this is the favorites screen, we only remove from favorites
         boolean isFavorite = favoriteMealIds.contains(meal.getIdMeal());
 
         if (isFavorite) {
@@ -77,8 +70,7 @@ public class SavedPresenterImp implements SavedPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> {
-                    // The observable will automatically update the UI
-                    // No need to manually update here as loadFavorites subscription handles it
+
                 }, error -> {
                     if (savedView != null) {
                         savedView.showError("Failed to remove from favorites: " + error.getMessage());

@@ -35,20 +35,18 @@ public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
     public static final String PREF_NAME = "OnboardingPrefs";
     public static final String KEY_ONBOARDING_COMPLETED = "onboarding_completed";
-    private static final long MIN_SPLASH_DURATION_MS = 1800; // 1.8 seconds
+    private static final long MIN_SPLASH_DURATION_MS = 1800;
     private Disposable splashDisposable;
     private SplashPresenter splashPresenter;
     private AuthRepo authRepo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Initialize AuthRepo for accessing user session and dark mode
+
         AuthRemoteDataSource remoteDataSource = new AuthRemoteDataSource();
         AuthPrefManager prefManager = AuthPrefManager.getInstance(getApplicationContext());
         authRepo = new AuthRepoImp(remoteDataSource, prefManager);
 
-        // Apply dark mode BEFORE setting content view
-        // Using DarkModeHelper which uses AuthRepo
         DarkModeHelper.applyDarkMode(getApplicationContext());
 
         setTheme(R.style.Theme_PlateMate_Splash);
@@ -68,7 +66,7 @@ public class SplashActivity extends AppCompatActivity {
 
         splashPresenter = new SplashPresenterImp(getApplicationContext());
 
-        // Check onboarding first
+
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         boolean onboardingCompleted = prefs.getBoolean(KEY_ONBOARDING_COMPLETED, false);
         if (!onboardingCompleted) {
@@ -81,20 +79,16 @@ public class SplashActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if user is already logged in using AuthRepo
         if (isUserLoggedIn()) {
             Log.d(TAG, "User is already logged in, skipping auth screen");
-            // User is logged in, directly preload data and go to MainActivity
             preloadDataAndNavigateToMain();
         } else {
             Log.d(TAG, "User is not logged in, will show auth screen");
-            // User is not logged in, preload data and go to AuthActivity
             preloadDataAndNavigateToAuth();
         }
     }
 
     private boolean isUserLoggedIn() {
-        // Use AuthRepo instead of AuthPrefManager directly
         return authRepo.isUserLoggedIn();
     }
 
@@ -145,7 +139,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private void onDataLoadErrorAndGoToMain(Throwable error) {
         Log.e(TAG, "Error loading data for logged-in user: " + error.getMessage(), error);
-        goToMain(); // Still go to main even if data fails to load
+        goToMain();
     }
 
     private void onDataLoaded(InitialMealData data) {
@@ -160,7 +154,6 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void logDataInfo(InitialMealData data) {
-        // Your existing logging code here...
         if (data.getCategories() != null && data.getCategories().getMeal() != null) {
             Log.d(TAG, "Categories count: " + data.getCategories().getMeal().size());
             data.getCategories().getMeal().forEach(category ->
@@ -216,11 +209,7 @@ public class SplashActivity extends AppCompatActivity {
     private void goToAuth() {
         Intent intent = new Intent(SplashActivity.this, AuthActivity.class);
         startActivity(intent);
-
-        // Professional fade transition
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-
-        // Finish splash so the user can't go back to it
         finish();
     }
 

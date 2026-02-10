@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.example.plate_mate.R;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.presentation.home.view.MealAdapter;
-import com.example.plate_mate.presentation.saved.presenter.SavedPresenter;
+import com.example.plate_mate.presentation.saved.contract.SavedContract;
 import com.example.plate_mate.presentation.saved.presenter.SavedPresenterImp;
 
 
@@ -25,21 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class SavedFragment extends Fragment implements SavedView {
+public class SavedFragment extends Fragment implements SavedContract.View {
 
     private RecyclerView rvFavorites;
     private View layoutEmptyState;
     private MealAdapter adapter;
-    private SavedPresenter presenter;
+    private SavedContract.Presenter presenter;
 
-    public SavedFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_saved, container, false);
     }
 
@@ -47,14 +43,11 @@ public class SavedFragment extends Fragment implements SavedView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize views
         rvFavorites = view.findViewById(R.id.rvFavorites);
         layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
 
-        // Setup RecyclerView
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize adapter with click listeners
         adapter = new MealAdapter(
                 new ArrayList<>(),
                 this::navigateToMealDetails,
@@ -62,10 +55,8 @@ public class SavedFragment extends Fragment implements SavedView {
         );
         rvFavorites.setAdapter(adapter);
 
-        // Initialize presenter
         presenter = new SavedPresenterImp(requireContext(), this);
 
-        // Load favorites
         presenter.loadFavorites();
     }
 
@@ -115,11 +106,8 @@ public class SavedFragment extends Fragment implements SavedView {
     }
 
     private void onFavoriteClick(Meal meal, boolean currentlyFavorite) {
-        // Toggle favorite (which in this screen will always remove it)
         presenter.toggleFavorite(meal);
 
-        // The presenter's observable will automatically update the list
-        // No need to manually update adapter here
     }
 
     @Override
