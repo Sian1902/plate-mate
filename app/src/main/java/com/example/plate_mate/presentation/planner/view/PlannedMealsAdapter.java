@@ -1,4 +1,4 @@
-package com.example.plate_mate.presentation.planner.view;
+package com.example.plate_mate.presentation.planner;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +15,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -85,14 +86,16 @@ class PlannedMealsAdapter extends RecyclerView.Adapter<PlannedMealsAdapter.ViewH
 
                 Glide.with(itemView.getContext())
                         .load(plannedMeal.getMeal().getStrMealThumb())
-                        .placeholder(R.drawable.chef)
+                        .placeholder(R.drawable.ic_launcher_background)
                         .error(R.drawable.chef)
                         .into(mealImage);
             } else {
                 mealName.setText("No meal planned");
                 mealTime.setText("");
-                mealImage.setImageResource(R.drawable.chef);
+                mealImage.setImageResource(R.drawable.ic_launcher_background);
             }
+
+            // Set up click listeners
             itemView.setOnClickListener(v -> {
                 if (listener != null && plannedMeal.getMeal() != null) {
                     listener.onMealClick(plannedMeal);
@@ -116,6 +119,7 @@ class PlannedMealsAdapter extends RecyclerView.Adapter<PlannedMealsAdapter.ViewH
                     return "Lunch";
                 case DINNER:
                     return "Dinner";
+
                 default:
                     return mealType.name();
             }

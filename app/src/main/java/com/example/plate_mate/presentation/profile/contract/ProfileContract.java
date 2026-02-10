@@ -11,6 +11,7 @@ public interface ProfileContract {
         void showSuccess(String message);
         void navigateToLogin();
         void updateDarkModeSwitch(boolean isEnabled);
+        void showUploadComplete(int favoritesCount, int plannedMealsCount);
     }
 
     interface Presenter {
@@ -20,5 +21,7 @@ public interface ProfileContract {
         void onDarkModeToggled(boolean isEnabled);
         void onResetPasswordClicked();
         void onLogoutClicked();
+        void onUploadDataClicked();
+
     }
 }

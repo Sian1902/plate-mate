@@ -88,6 +88,44 @@
                     tools:text="alex.thompson@example.com" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- DATA SYNC SECTION -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="32dp"
+                android:letterSpacing="0.1"
+                android:text="CLOUD SYNC"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- Only Upload Button (Primary) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/uploadDataButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:text="Upload to Cloud"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                app:icon="@drawable/baseline_cloud_upload_24"
+                app:iconGravity="textStart"
+                app:iconPadding="12dp"
+                app:cornerRadius="12dp"
+                style="@style/Widget.Material3.Button"
+                android:backgroundTint="@color/primary"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Upload your favorites and planned meals to Firebase"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginStart="4dp"/>
+
+            <!-- APP SETTINGS SECTION -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -202,6 +240,5 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

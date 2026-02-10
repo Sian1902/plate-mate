@@ -42,7 +42,6 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         AuthRemoteDataSource remoteDataSource = new AuthRemoteDataSource();
         AuthPrefManager prefManager = AuthPrefManager.getInstance(getApplicationContext());
         authRepo = new AuthRepoImp(remoteDataSource, prefManager);
@@ -66,7 +65,7 @@ public class SplashActivity extends AppCompatActivity {
 
         splashPresenter = new SplashPresenterImp(getApplicationContext());
 
-
+        // Check onboarding first
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         boolean onboardingCompleted = prefs.getBoolean(KEY_ONBOARDING_COMPLETED, false);
         if (!onboardingCompleted) {
@@ -81,6 +80,7 @@ public class SplashActivity extends AppCompatActivity {
 
         if (isUserLoggedIn()) {
             Log.d(TAG, "User is already logged in, skipping auth screen");
+
             preloadDataAndNavigateToMain();
         } else {
             Log.d(TAG, "User is not logged in, will show auth screen");
@@ -154,6 +154,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void logDataInfo(InitialMealData data) {
+        // Your existing logging code here...
         if (data.getCategories() != null && data.getCategories().getMeal() != null) {
             Log.d(TAG, "Categories count: " + data.getCategories().getMeal().size());
             data.getCategories().getMeal().forEach(category ->
@@ -209,7 +210,11 @@ public class SplashActivity extends AppCompatActivity {
     private void goToAuth() {
         Intent intent = new Intent(SplashActivity.this, AuthActivity.class);
         startActivity(intent);
+
+        // Professional fade transition
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+        // Finish splash so the user can't go back to it
         finish();
     }
 

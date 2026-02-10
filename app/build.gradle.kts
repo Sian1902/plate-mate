@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     implementation("com.airbnb.android:lottie:6.1.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
