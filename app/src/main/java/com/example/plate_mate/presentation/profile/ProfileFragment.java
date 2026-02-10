@@ -33,9 +33,7 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
     private SwitchMaterial darkModeSwitch;
     private LinearLayout resetPasswordLayout;
     private LinearLayout logoutLayout;
-    private MaterialButton uploadDataButton;
-    private MaterialButton downloadDataButton;
-    private MaterialButton fullSyncButton;
+    private MaterialButton uploadDataButton; // Only upload button remains
     private ProgressBar progressBar;
 
     private ProfilePresenter presenter;
@@ -79,9 +77,7 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         darkModeSwitch = view.findViewById(R.id.darkModeSwitch);
         resetPasswordLayout = view.findViewById(R.id.resetPasswordLayout);
         logoutLayout = view.findViewById(R.id.logoutLayout);
-        uploadDataButton = view.findViewById(R.id.uploadDataButton);
-        downloadDataButton = view.findViewById(R.id.downloadDataButton);
-        fullSyncButton = view.findViewById(R.id.fullSyncButton);
+        uploadDataButton = view.findViewById(R.id.uploadDataButton); // Only upload button
         progressBar = view.findViewById(R.id.progressBar);
     }
 
@@ -94,11 +90,9 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         });
 
         resetPasswordLayout.setOnClickListener(v -> presenter.onResetPasswordClicked());
-        logoutLayout.setOnClickListener(v -> presenter.onLogoutClicked());
+        logoutLayout.setOnClickListener(v -> showLogoutConfirmationDialog()); // Show confirmation dialog
 
         uploadDataButton.setOnClickListener(v -> showUploadConfirmationDialog());
-        downloadDataButton.setOnClickListener(v -> showDownloadConfirmationDialog());
-        fullSyncButton.setOnClickListener(v -> showFullSyncConfirmationDialog());
     }
 
     private void showUploadConfirmationDialog() {
@@ -110,20 +104,12 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
                 .show();
     }
 
-    private void showDownloadConfirmationDialog() {
+    private void showLogoutConfirmationDialog() {
+        // First check if there's unsynced data
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Download from Firebase")
-                .setMessage("This will download your favorites and planned meals from Firebase and merge with local data. Continue?")
-                .setPositiveButton("Download", (dialog, which) -> presenter.onDownloadDataClicked())
-                .setNegativeButton("Cancel", null)
-                .show();
-    }
-
-    private void showFullSyncConfirmationDialog() {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Full Sync")
-                .setMessage("This will:\n1. Upload local data to Firebase\n2. Download Firebase data to device\n\nAll data will be synced. Continue?")
-                .setPositiveButton("Sync", (dialog, which) -> presenter.onFullSyncClicked())
+                .setTitle("Sign Out")
+                .setMessage("Signing out will clear all your local data. Make sure you've uploaded your data to the cloud first. Sign out anyway?")
+                .setPositiveButton("Sign Out", (dialog, which) -> presenter.onLogoutClicked())
                 .setNegativeButton("Cancel", null)
                 .show();
     }
@@ -143,8 +129,7 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         }
         if (uploadDataButton != null) uploadDataButton.setEnabled(!isLoading);
-        if (downloadDataButton != null) downloadDataButton.setEnabled(!isLoading);
-        if (fullSyncButton != null) fullSyncButton.setEnabled(!isLoading);
+        if (logoutLayout != null) logoutLayout.setEnabled(!isLoading);
     }
 
     @Override
@@ -170,23 +155,6 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         if (darkModeSwitch != null) {
             darkModeSwitch.setChecked(isEnabled);
         }
-    }
-
-    @Override
-    public void showSyncProgress(String message) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showSyncComplete(int favoritesCount, int plannedMealsCount) {
-        String message = String.format("Download complete!\n✓ %d favorites\n✓ %d planned meals",
-                favoritesCount, plannedMealsCount);
-
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Download Successful")
-                .setMessage(message)
-                .setPositiveButton("OK", null)
-                .show();
     }
 
     @Override

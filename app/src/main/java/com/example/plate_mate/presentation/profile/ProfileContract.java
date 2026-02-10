@@ -11,8 +11,6 @@ public interface ProfileContract {
         void showSuccess(String message);
         void navigateToLogin();
         void updateDarkModeSwitch(boolean isEnabled);
-        void showSyncProgress(String message);
-        void showSyncComplete(int favoritesCount, int plannedMealsCount);
         void showUploadComplete(int favoritesCount, int plannedMealsCount);
     }
 
@@ -23,8 +21,7 @@ public interface ProfileContract {
         void onDarkModeToggled(boolean isEnabled);
         void onResetPasswordClicked();
         void onLogoutClicked();
-        void onDownloadDataClicked();
         void onUploadDataClicked();
-        void onFullSyncClicked(); // Both upload and download
+
     }
 }
