@@ -12,6 +12,8 @@ public interface ProfileContract {
         void navigateToLogin();
         void updateDarkModeSwitch(boolean isEnabled);
         void showUploadComplete(int favoritesCount, int plannedMealsCount);
+        void showUploadProgress(String message);
+        void showLogoutWarningDialog();
     }
 
     interface Presenter {
@@ -21,7 +23,8 @@ public interface ProfileContract {
         void onDarkModeToggled(boolean isEnabled);
         void onResetPasswordClicked();
         void onLogoutClicked();
+        void onLogoutConfirmed();
         void onUploadDataClicked();
-
+        void onLoginSuccess(String userId);
     }
 }

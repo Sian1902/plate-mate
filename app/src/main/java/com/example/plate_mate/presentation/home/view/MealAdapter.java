@@ -24,6 +24,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
     private final OnMealClickListener listener;
     private final OnFavoriteClickListener favoriteListener;
     private final Set<String> favoriteMealIds = new HashSet<>();
+    private final boolean isGuestMode;
 
     public interface OnMealClickListener {
         void onMealClick(Meal meal);
@@ -33,10 +34,12 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
         void onFavoriteClick(Meal meal, boolean isFavorite);
     }
 
-    public MealAdapter(List<Meal> mealList, OnMealClickListener listener, OnFavoriteClickListener favoriteListener) {
+    public MealAdapter(List<Meal> mealList, OnMealClickListener listener,
+                       OnFavoriteClickListener favoriteListener, boolean isGuestMode) {
         this.mealList = mealList != null ? mealList : new ArrayList<>();
         this.listener = listener;
         this.favoriteListener = favoriteListener;
+        this.isGuestMode = isGuestMode;
     }
 
     public void updateMeals(List<Meal> newMeals) {
@@ -73,7 +76,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
     public void onBindViewHolder(@NonNull MealViewHolder holder, int position) {
         Meal meal = mealList.get(position);
         boolean isFavorite = favoriteMealIds.contains(meal.getIdMeal());
-        holder.bind(meal, isFavorite, listener, favoriteListener);
+        holder.bind(meal, isFavorite, isGuestMode, listener, favoriteListener);
     }
 
     @Override
@@ -93,17 +96,24 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
             ivFavorite = itemView.findViewById(R.id.ivFavorite);
         }
 
-        public void bind(Meal meal, boolean isFavorite, OnMealClickListener listener, OnFavoriteClickListener favoriteListener) {
+        public void bind(Meal meal, boolean isFavorite, boolean isGuestMode,
+                         OnMealClickListener listener, OnFavoriteClickListener favoriteListener) {
             tvMealName.setText(meal.getStrMeal());
 
             Glide.with(itemView.getContext())
                     .load(meal.getStrMealThumb())
                     .into(ivMealImage);
 
-            if (isFavorite) {
-                ivFavorite.setImageResource(R.drawable.favorite);
-            } else {
+            if (isGuestMode) {
                 ivFavorite.setImageResource(R.drawable.outline_favorite_24);
+                ivFavorite.setAlpha(0.5f);
+            } else {
+                ivFavorite.setAlpha(1.0f);
+                if (isFavorite) {
+                    ivFavorite.setImageResource(R.drawable.favorite);
+                } else {
+                    ivFavorite.setImageResource(R.drawable.outline_favorite_24);
+                }
             }
 
             itemView.setOnClickListener(v -> {
@@ -114,6 +124,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
 
             ivFavorite.setOnClickListener(v -> {
                 if (favoriteListener != null) {
+                    // Listener will handle guest mode check
                     favoriteListener.onFavoriteClick(meal, isFavorite);
                 }
             });

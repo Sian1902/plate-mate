@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.plate_mate.R;
+import com.example.plate_mate.data.auth.datastore.local.AuthPrefManager;
 import com.example.plate_mate.data.meal.model.Area;
 import com.example.plate_mate.data.meal.model.Category;
 import com.example.plate_mate.data.meal.model.Ingredient;
@@ -25,6 +26,8 @@ import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.presentation.home.contract.HomeContract;
 import com.example.plate_mate.presentation.home.presenter.HomePresenterImp;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +46,7 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     private ImageView ivClearSearch;
     private Chip chipCountry, chipCategory, chipIngredients;
     private boolean isClearing = false;
+    private AuthPrefManager authPrefManager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,6 +56,9 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        authPrefManager = AuthPrefManager.getInstance(requireContext());
+
         rvMeals = view.findViewById(R.id.rvMeals);
         ivHeroImage = view.findViewById(R.id.ivHeroMealImage);
         tvHeroTitle = view.findViewById(R.id.tvHeroMealTitle);
@@ -136,7 +143,10 @@ public class HomeFragment extends Fragment implements HomeContract.View {
             Glide.with(this).load(hero.getStrMealThumb()).into(ivHeroImage);
             layoutHeroMeal.setOnClickListener(v -> navigate(hero));
         }
-        adapter = new MealAdapter(new ArrayList<>(meals), this::navigate, this::onFavoriteClick);
+
+        // Pass guest mode status to adapter
+        boolean isGuest = authPrefManager.isGuest();
+        adapter = new MealAdapter(new ArrayList<>(meals), this::navigate, this::onFavoriteClick, isGuest);
         rvMeals.setAdapter(adapter);
     }
 
@@ -147,10 +157,23 @@ public class HomeFragment extends Fragment implements HomeContract.View {
     }
 
     private void onFavoriteClick(Meal meal, boolean currentlyFavorite) {
+        if (authPrefManager.isGuest()) {
+            showGuestModeSnackbar();
+            return;
+        }
+
         homePresenter.toggleFavorite(meal);
         if (adapter != null) {
             adapter.toggleFavorite(meal.getIdMeal());
         }
+    }
+
+    private void showGuestModeSnackbar() {
+        Snackbar.make(requireView(), "Please sign in to add favorites", Snackbar.LENGTH_LONG)
+                .setAction("Sign In", v -> {
+                    Navigation.findNavController(requireView()).navigate(R.id.nav_profile);
+                })
+                .show();
     }
 
     @Override

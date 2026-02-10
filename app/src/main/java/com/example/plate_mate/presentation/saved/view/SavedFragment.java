@@ -51,7 +51,8 @@ public class SavedFragment extends Fragment implements SavedContract.View {
         adapter = new MealAdapter(
                 new ArrayList<>(),
                 this::navigateToMealDetails,
-                this::onFavoriteClick
+                this::onFavoriteClick,
+                false
         );
         rvFavorites.setAdapter(adapter);
 

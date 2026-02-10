@@ -21,8 +21,12 @@ import com.example.plate_mate.data.auth.model.User;
 import com.example.plate_mate.data.auth.repo.AuthRepoImp;
 import com.example.plate_mate.data.meal.datasource.remote.FirebaseSyncDataSource;
 import com.example.plate_mate.data.meal.repository.MealRepoImp;
+import com.example.plate_mate.presentation.profile.contract.ProfileContract;
+import com.example.plate_mate.presentation.profile.presenter.ProfilePresenter;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -33,10 +37,12 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
     private SwitchMaterial darkModeSwitch;
     private LinearLayout resetPasswordLayout;
     private LinearLayout logoutLayout;
-    private MaterialButton uploadDataButton; // Only upload button remains
+    private MaterialButton uploadDataButton;
+    private MaterialCardView syncSection;
     private ProgressBar progressBar;
 
     private ProfilePresenter presenter;
+    private AuthPrefManager authPrefManager;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -45,6 +51,8 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        authPrefManager = AuthPrefManager.getInstance(requireContext());
 
         AuthRemoteDataSource remoteDataSource = new AuthRemoteDataSource();
         AuthPrefManager prefManager = AuthPrefManager.getInstance(requireContext());
@@ -62,6 +70,8 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
 
         initViews(view);
         setupListeners();
+        updateUIForGuestMode();
+
         presenter.attachView(this);
 
         return view;
@@ -73,7 +83,8 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         darkModeSwitch = view.findViewById(R.id.darkModeSwitch);
         resetPasswordLayout = view.findViewById(R.id.resetPasswordLayout);
         logoutLayout = view.findViewById(R.id.logoutLayout);
-        uploadDataButton = view.findViewById(R.id.uploadDataButton); // Only upload button
+        uploadDataButton = view.findViewById(R.id.uploadDataButton);
+        syncSection = view.findViewById(R.id.syncSection);
         progressBar = view.findViewById(R.id.progressBar);
     }
 
@@ -85,28 +96,91 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
             }
         });
 
-        resetPasswordLayout.setOnClickListener(v -> presenter.onResetPasswordClicked());
-        logoutLayout.setOnClickListener(v -> showLogoutConfirmationDialog()); // Show confirmation dialog
+        resetPasswordLayout.setOnClickListener(v -> {
+            if (authPrefManager.isGuest()) {
+                showGuestModeSnackbar("sign in to reset your password");
+                return;
+            }
+            presenter.onResetPasswordClicked();
+        });
 
-        uploadDataButton.setOnClickListener(v -> showUploadConfirmationDialog());
+        logoutLayout.setOnClickListener(v -> presenter.onLogoutClicked());
+
+        uploadDataButton.setOnClickListener(v -> {
+            if (authPrefManager.isGuest()) {
+                showGuestModeSnackbar("sign in to backup your data");
+                return;
+            }
+            showUploadConfirmationDialog();
+        });
+    }
+
+    private void updateUIForGuestMode() {
+        if (authPrefManager.isGuest()) {
+            // Hide sync section for guest users
+            if (syncSection != null) {
+                syncSection.setVisibility(View.GONE);
+            }
+        } else {
+            if (syncSection != null) {
+                syncSection.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void showGuestModeSnackbar(String action) {
+        Snackbar.make(requireView(), "Please " + action, Snackbar.LENGTH_LONG)
+                .setAction("Sign In", v -> {
+                    Intent intent = new Intent(requireContext(), AuthActivity.class);
+                    startActivity(intent);
+                })
+                .show();
     }
 
     private void showUploadConfirmationDialog() {
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Upload to Firebase")
-                .setMessage("This will upload all your local favorites and planned meals to Firebase. Continue?")
+                .setTitle("Backup to Cloud")
+                .setMessage("This will upload all your local favorites and planned meals to Firebase cloud storage. Continue?")
                 .setPositiveButton("Upload", (dialog, which) -> presenter.onUploadDataClicked())
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
-    private void showLogoutConfirmationDialog() {
-        // First check if there's unsynced data
+    @Override
+    public void showLogoutWarningDialog() {
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Sign Out")
-                .setMessage("Signing out will clear all your local data. Make sure you've uploaded your data to the cloud first. Sign out anyway?")
-                .setPositiveButton("Sign Out", (dialog, which) -> presenter.onLogoutClicked())
+                .setTitle("⚠️ Logout Warning")
+                .setMessage("Logging out will delete all your local data (favorites and planned meals).\n\n" +
+                        "Make sure you've backed up your data to the cloud before logging out.\n\n" +
+                        "What would you like to do?")
+                .setPositiveButton("Backup & Logout", (dialog, which) -> {
+                    presenter.onUploadDataClicked();
+                    showBackupThenLogoutMessage();
+                })
+                .setNegativeButton("Logout Without Backup", (dialog, which) -> {
+                    showFinalLogoutConfirmation();
+                })
+                .setNeutralButton("Cancel", null)
+                .show();
+    }
+
+    private void showBackupThenLogoutMessage() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Backup Complete")
+                .setMessage("Your data has been backed up to the cloud.\n\nYou can now logout safely. Would you like to logout now?")
+                .setPositiveButton("Logout Now", (dialog, which) -> presenter.onLogoutConfirmed())
+                .setNegativeButton("Stay Logged In", null)
+                .show();
+    }
+
+    private void showFinalLogoutConfirmation() {
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle("⚠️ Final Confirmation")
+                .setMessage("Are you absolutely sure you want to logout without backing up?\n\n" +
+                        "ALL your favorites and planned meals will be PERMANENTLY DELETED from this device.")
+                .setPositiveButton("Yes, Delete Everything", (dialog, which) -> presenter.onLogoutConfirmed())
                 .setNegativeButton("Cancel", null)
+                .setCancelable(false)
                 .show();
     }
 
@@ -124,8 +198,9 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         if (progressBar != null) {
             progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         }
-        if (uploadDataButton != null) uploadDataButton.setEnabled(!isLoading);
-        if (logoutLayout != null) logoutLayout.setEnabled(!isLoading);
+        if (uploadDataButton != null && !authPrefManager.isGuest()) {
+            uploadDataButton.setEnabled(!isLoading);
+        }
     }
 
     @Override
@@ -154,12 +229,17 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
     }
 
     @Override
+    public void showUploadProgress(String message) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void showUploadComplete(int favoritesCount, int plannedMealsCount) {
-        String message = String.format("Upload complete!\n✓ %d favorites\n✓ %d planned meals",
+        String message = String.format("Backup complete!\n✓ %d favorites\n✓ %d planned meals uploaded to cloud",
                 favoritesCount, plannedMealsCount);
 
         new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Upload Successful")
+                .setTitle("Backup Successful")
                 .setMessage(message)
                 .setPositiveButton("OK", null)
                 .show();

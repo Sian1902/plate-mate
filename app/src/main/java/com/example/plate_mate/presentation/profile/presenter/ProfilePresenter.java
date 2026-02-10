@@ -1,13 +1,17 @@
-package com.example.plate_mate.presentation.profile;
+package com.example.plate_mate.presentation.profile.presenter;
+
 import com.example.plate_mate.data.auth.datastore.remote.AuthRemoteDataSource;
 import com.example.plate_mate.data.auth.model.User;
 import com.example.plate_mate.data.auth.repo.AuthRepo;
+
 import com.example.plate_mate.data.meal.datasource.remote.FirebaseSyncDataSource;
 import com.example.plate_mate.data.meal.model.FirebaseFavorite;
 import com.example.plate_mate.data.meal.model.FirebasePlannedMeal;
 import com.example.plate_mate.data.meal.model.Meal;
+import com.example.plate_mate.data.meal.model.MealType;
 import com.example.plate_mate.data.meal.model.PlannedMeal;
 import com.example.plate_mate.data.meal.repository.MealRepository;
+import com.example.plate_mate.presentation.profile.contract.ProfileContract;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
@@ -16,7 +20,6 @@ import java.util.List;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -121,50 +124,34 @@ public class ProfilePresenter implements ProfileContract.Presenter {
     public void onLogoutClicked() {
         if (view == null) return;
 
+        // Show logout warning dialog first
+        view.showLogoutWarningDialog();
+    }
+
+    @Override
+    public void onLogoutConfirmed() {
+        if (view == null) return;
+
         view.showLoading(true);
 
-        // First clear all local data
+        // Clear all local data, then logout
         disposables.add(
-                Completable.mergeArray(
-                                mealRepository.deleteAllPlannedMeals(),
-                                mealRepository.getAllFavorites()
-                                        .firstOrError()
-                                        .flatMapCompletable(favorites -> {
-                                            List<Completable> deleteOps = new ArrayList<>();
-                                            for (Meal favorite : favorites) {
-                                                deleteOps.add(mealRepository.deleteFavorite(favorite.getIdMeal()));
-                                            }
-                                            return Completable.merge(deleteOps);
-                                        })
-                        )
+                clearAllLocalData()
+                        .andThen(authRepo.logout())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
                                 () -> {
-                                    // Now logout
-                                    authRepo.logout()
-                                            .subscribeOn(Schedulers.io())
-                                            .observeOn(AndroidSchedulers.mainThread())
-                                            .subscribe(
-                                                    () -> {
-                                                        if (view != null) {
-                                                            view.showLoading(false);
-                                                            view.showSuccess("Logged out successfully. All local data cleared.");
-                                                            view.navigateToLogin();
-                                                        }
-                                                    },
-                                                    error -> {
-                                                        if (view != null) {
-                                                            view.showLoading(false);
-                                                            view.showError("Logout failed: " + error.getMessage());
-                                                        }
-                                                    }
-                                            );
+                                    if (view != null) {
+                                        view.showLoading(false);
+                                        view.showSuccess("Logged out successfully");
+                                        view.navigateToLogin();
+                                    }
                                 },
                                 error -> {
                                     if (view != null) {
                                         view.showLoading(false);
-                                        view.showError("Failed to clear local data: " + error.getMessage());
+                                        view.showError("Logout failed: " + error.getMessage());
                                     }
                                 }
                         )
@@ -183,6 +170,7 @@ public class ProfilePresenter implements ProfileContract.Presenter {
 
         String userId = user.getUid();
         view.showLoading(true);
+        view.showUploadProgress("Uploading your data to Firebase...");
 
         disposables.add(
                 Observable.zip(
@@ -209,14 +197,48 @@ public class ProfilePresenter implements ProfileContract.Presenter {
         );
     }
 
-    // ==================== UPLOAD HELPERS ====================
+    @Override
+    public void onLoginSuccess(String userId) {
+        if (view == null) return;
 
-    private Single<Integer> uploadFavorites(String userId) {
+        view.showLoading(true);
+
+        // Download data from Firebase after successful login
+        disposables.add(
+                Observable.zip(
+                                downloadFavorites(userId).toObservable(),
+                                downloadPlannedMeals(userId).toObservable(),
+                                (favCount, plannedCount) -> new int[]{favCount, plannedCount}
+                        )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                counts -> {
+                                    if (view != null) {
+                                        view.showLoading(false);
+                                        if (counts[0] > 0 || counts[1] > 0) {
+                                            view.showSuccess(String.format("Restored %d favorites and %d planned meals",
+                                                    counts[0], counts[1]));
+                                        }
+                                    }
+                                },
+                                error -> {
+                                    if (view != null) {
+                                        view.showLoading(false);
+                                        // Don't show error to user - they can still use app without cloud data
+                                    }
+                                }
+                        )
+        );
+    }
+
+
+    private io.reactivex.rxjava3.core.Single<Integer> uploadFavorites(String userId) {
         return mealRepository.getAllFavorites()
                 .firstOrError()
                 .flatMap(localFavorites -> {
                     if (localFavorites.isEmpty()) {
-                        return Single.just(0);
+                        return io.reactivex.rxjava3.core.Single.just(0);
                     }
 
                     List<FirebaseFavorite> firebaseFavorites = new ArrayList<>();
@@ -229,12 +251,12 @@ public class ProfilePresenter implements ProfileContract.Presenter {
                 });
     }
 
-    private Single<Integer> uploadPlannedMeals(String userId) {
+    private io.reactivex.rxjava3.core.Single<Integer> uploadPlannedMeals(String userId) {
         return mealRepository.getAllPlannedMeals()
                 .firstOrError()
                 .flatMap(localPlannedMeals -> {
                     if (localPlannedMeals.isEmpty()) {
-                        return Single.just(0);
+                        return io.reactivex.rxjava3.core.Single.just(0);
                     }
 
                     List<FirebasePlannedMeal> firebasePlannedMeals = new ArrayList<>();
@@ -250,5 +272,78 @@ public class ProfilePresenter implements ProfileContract.Presenter {
                     return firebaseSyncDataSource.uploadPlannedMeals(firebasePlannedMeals, userId)
                             .toSingleDefault(firebasePlannedMeals.size());
                 });
+    }
+
+
+    private io.reactivex.rxjava3.core.Single<Integer> downloadFavorites(String userId) {
+        return firebaseSyncDataSource.fetchUserFavorites(userId)
+                .flatMap(firebaseFavorites -> {
+                    if (firebaseFavorites.isEmpty()) {
+                        return io.reactivex.rxjava3.core.Single.just(0);
+                    }
+
+                    return Observable.fromIterable(firebaseFavorites)
+                            .flatMapSingle(favorite ->
+                                    mealRepository.getMealById(favorite.getMealId())
+                                            .flatMap(mealResponse -> {
+                                                if (mealResponse.getMeals() != null && !mealResponse.getMeals().isEmpty()) {
+                                                    Meal meal = mealResponse.getMeals().get(0);
+                                                    return mealRepository.insertFavorite(meal)
+                                                            .toSingleDefault(1)
+                                                            .onErrorReturnItem(0);
+                                                }
+                                                return io.reactivex.rxjava3.core.Single.just(0);
+                                            })
+                            )
+                            .reduce(0, Integer::sum);
+                });
+    }
+
+    private io.reactivex.rxjava3.core.Single<Integer> downloadPlannedMeals(String userId) {
+        return firebaseSyncDataSource.fetchUserPlannedMeals(userId)
+                .flatMap(firebasePlannedMeals -> {
+                    if (firebasePlannedMeals.isEmpty()) {
+                        return io.reactivex.rxjava3.core.Single.just(0);
+                    }
+
+                    return Observable.fromIterable(firebasePlannedMeals)
+                            .flatMapSingle(plannedMeal ->
+                                    mealRepository.getMealById(plannedMeal.getMealId())
+                                            .flatMap(mealResponse -> {
+                                                if (mealResponse.getMeals() != null && !mealResponse.getMeals().isEmpty()) {
+                                                    Meal meal = mealResponse.getMeals().get(0);
+
+                                                    PlannedMeal localPlannedMeal = new PlannedMeal(
+                                                            plannedMeal.getDate(),
+                                                            MealType.valueOf(plannedMeal.getMealType()),
+                                                            plannedMeal.getMealId(),
+                                                            meal,
+                                                            System.currentTimeMillis()
+                                                    );
+
+                                                    return mealRepository.insertPlannedMeal(localPlannedMeal)
+                                                            .toSingleDefault(1)
+                                                            .onErrorReturnItem(0);
+                                                }
+                                                return io.reactivex.rxjava3.core.Single.just(0);
+                                            })
+                            )
+                            .reduce(0, Integer::sum);
+                });
+    }
+
+
+    private Completable clearAllLocalData() {
+        return Completable.mergeArray(
+                mealRepository.deleteAllPlannedMeals(),
+                mealRepository.getAllFavorites()
+                        .firstOrError()
+                        .flatMapCompletable(favorites ->
+                                Observable.fromIterable(favorites)
+                                        .flatMapCompletable(meal ->
+                                                mealRepository.deleteFavorite(meal.getIdMeal())
+                                        )
+                        )
+        );
     }
 }
