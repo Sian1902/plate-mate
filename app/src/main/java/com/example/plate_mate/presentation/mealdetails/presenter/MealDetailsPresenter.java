@@ -2,6 +2,7 @@ package com.example.plate_mate.presentation.mealdetails.presenter;
 
 import android.content.Context;
 
+import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.data.meal.repository.MealRepoImp;
 import com.example.plate_mate.presentation.mealdetails.view.MealDetailsView;
 
@@ -20,15 +21,60 @@ public class MealDetailsPresenter {
     }
 
     public void fetchMealDetails(String mealId) {
-        disposables.add(repository.getMealById(mealId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(response -> {
-            if (response.getMeals() != null && !response.getMeals().isEmpty()) {
-                view.showMealDetails(response.getMeals().get(0));
-            } else {
-                view.showError("Failed to load details");
-            }
-        }, throwable -> {
-            view.showError("Network error");
-        }));
+        disposables.add(repository.getMealById(mealId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    if (response.getMeals() != null && !response.getMeals().isEmpty()) {
+                        view.showMealDetails(response.getMeals().get(0));
+                    } else {
+                        view.showError("Failed to load details");
+                    }
+                }, throwable -> {
+                    view.showError("Network error");
+                }));
+    }
+
+    public void checkIfFavorite(String mealId) {
+        disposables.add(repository.getAllFavorites()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(favorites -> {
+                    boolean isFavorite = false;
+                    for (Meal meal : favorites) {
+                        if (meal.getIdMeal().equals(mealId)) {
+                            isFavorite = true;
+                            break;
+                        }
+                    }
+                    view.updateFavoriteStatus(isFavorite);
+                }, throwable -> {
+                    view.updateFavoriteStatus(false);
+                }));
+    }
+
+    public void addToFavorites(Meal meal) {
+        disposables.add(repository.insertFavorite(meal)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    view.updateFavoriteStatus(true);
+                    view.showFavoriteAdded();
+                }, throwable -> {
+                    view.showError("Failed to add to favorites");
+                }));
+    }
+
+    public void removeFromFavorites(String mealId) {
+        disposables.add(repository.deleteFavorite(mealId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    view.updateFavoriteStatus(false);
+                    view.showFavoriteRemoved();
+                }, throwable -> {
+                    view.showError("Failed to remove from favorites");
+                }));
     }
 
     public void detachView() {

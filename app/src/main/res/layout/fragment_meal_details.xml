@@ -10,103 +10,212 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
+        android:orientation="vertical">
 
-        <!-- Header with Back Button and Title -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp">
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgMeal"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/meal_of_the_day"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+            <View
+                android:id="@+id/gradientOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:background="@drawable/gradient_overlay"
+                app:layout_constraintTop_toTopOf="@id/imgMeal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <ImageButton
                 android:id="@+id/btnBack"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_margin="12dp"
+                android:background="@drawable/back_button_background"
                 android:contentDescription="@string/back"
                 android:padding="12dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/outline_arrow_back_ios_new_24"
+                android:elevation="4dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/text_primary" />
+                app:tint="@color/white" />
 
-            <TextView
-                android:id="@+id/tvMealTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:fontFamily="@font/plus_jakarta_sans_bold"
-                android:textColor="@color/text_primary"
-                android:textSize="26sp"
-                android:ellipsize="end"
-                android:maxLines="2"
-                app:layout_constraintStart_toEndOf="@id/btnBack"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+            <ImageButton
+                android:id="@+id/btnFavorite"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="12dp"
+                android:background="@drawable/favorite_button_background"
+                android:contentDescription="@string/add_to_favorite"
+                android:padding="12dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/outline_favorite_24"
+                android:elevation="4dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0"
-                tools:text="Delicious Spaghetti Carbonara with Extra Long Name" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/white" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="4dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-                android:id="@+id/youtube_player_view"
+            <TextView
+                android:id="@+id/tvMealTitle"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:autoPlay="false" />
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/plus_jakarta_sans_bold"
+                android:textColor="@color/text_primary"
+                android:textSize="28sp"
+                android:lineHeight="36dp"
+                android:layout_marginBottom="4dp"
+                tools:text="Spaghetti Carbonara" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:fontFamily="@font/plus_jakarta_sans_bold"
-            android:text="Ingredients"
-            android:textColor="@color/primary"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/plus_jakarta_sans_medium"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                android:layout_marginBottom="20dp"
+                tools:text="Pasta • Italian" />
 
-        <TextView
-            android:id="@+id/tvIngredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:lineSpacingExtra="6dp"
-            android:fontFamily="@font/plus_jakarta_sans_medium"
-            android:textColor="@color/text_primary"
-            android:textSize="15sp"
-            tools:text="• 200g spaghetti\n• 100g pancetta\n• 2 large eggs\n• 50g parmesan cheese\n• Freshly ground black pepper\n• Salt to taste" />
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/videoCard"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
 
-        <!-- Instructions Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:fontFamily="@font/plus_jakarta_sans_bold"
-            android:text="Instructions"
-            android:textColor="@color/primary"
-            android:textSize="18sp" />
+                <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+                    android:id="@+id/youtube_player_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:autoPlay="false" />
+            </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/tvInstructions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="20dp"
-            android:lineSpacingExtra="8dp"
-            android:fontFamily="@font/plus_jakarta_sans_medium"
-            android:textColor="@color/text_secondary"
-            android:textSize="16sp"
-            tools:text="1. Cook the spaghetti in a large pan of boiling salted water according to package instructions.\n\n2. Meanwhile, cut the pancetta into small pieces and fry in a little olive oil until crispy.\n\n3. In a bowl, beat the eggs with grated parmesan and plenty of black pepper.\n\n4. Drain the pasta, reserving a little cooking water, then quickly toss with the pancetta.\n\n5. Remove from heat and stir in the egg mixture, adding a little pasta water to create a creamy sauce.\n\n6. Serve immediately with extra parmesan and black pepper." />
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/background">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_ingredients"
+                            android:contentDescription="@string/ingredients"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/plus_jakarta_sans_bold"
+                            android:text="Ingredients"
+                            android:textColor="@color/text_primary"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvIngredients"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="8dp"
+                        android:fontFamily="@font/plus_jakarta_sans_medium"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        tools:text="• 200g spaghetti\n• 100g pancetta\n• 2 large eggs\n• 50g parmesan cheese" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/background">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_instruction"
+                            android:contentDescription="@string/instructions"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/plus_jakarta_sans_bold"
+                            android:text="Instructions"
+                            android:textColor="@color/text_primary"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvInstructions"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="10dp"
+                        android:fontFamily="@font/plus_jakarta_sans"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="15sp"
+                        tools:text="1. Cook the spaghetti in a large pan of boiling salted water.\n\n2. Meanwhile, cut the pancetta into small pieces." />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

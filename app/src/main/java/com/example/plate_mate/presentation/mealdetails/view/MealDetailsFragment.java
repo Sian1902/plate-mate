@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.plate_mate.R;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.presentation.mealdetails.presenter.MealDetailsPresenter;
@@ -24,11 +27,15 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTube
 
 public class MealDetailsFragment extends Fragment implements MealDetailsView {
 
-    private TextView tvTitle, tvIngredients, tvInstructions;
+    private TextView tvTitle, tvCategory, tvIngredients, tvInstructions;
+    private ImageView imgMeal;
+    private ImageButton btnFavorite;
     private YouTubePlayerView youtubePlayerView;
     private MaterialCardView videoCard;
     private NavVisibilityCallback navVisibilityCallback;
     private MealDetailsPresenter presenter;
+    private Meal currentMeal;
+    private boolean isFavorite = false;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -46,17 +53,20 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         tvTitle = view.findViewById(R.id.tvMealTitle);
+        tvCategory = view.findViewById(R.id.tvCategory);
         tvIngredients = view.findViewById(R.id.tvIngredients);
         tvInstructions = view.findViewById(R.id.tvInstructions);
+        imgMeal = view.findViewById(R.id.imgMeal);
+        btnFavorite = view.findViewById(R.id.btnFavorite);
         youtubePlayerView = view.findViewById(R.id.youtube_player_view);
+        videoCard = view.findViewById(R.id.videoCard);
         ImageButton btnBack = view.findViewById(R.id.btnBack);
 
-        if (youtubePlayerView != null && youtubePlayerView.getParent() instanceof MaterialCardView) {
-            videoCard = (MaterialCardView) youtubePlayerView.getParent();
-        }
-
         btnBack.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+        btnFavorite.setOnClickListener(v -> toggleFavorite());
+
         getLifecycle().addObserver(youtubePlayerView);
 
         presenter = new MealDetailsPresenter(this, requireContext());
@@ -64,6 +74,9 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
         if (getArguments() != null) {
             Meal meal = (Meal) getArguments().getSerializable("selected_meal");
             if (meal != null) {
+                currentMeal = meal;
+                presenter.checkIfFavorite(meal.getIdMeal());
+
                 if (hasFullData(meal)) {
                     showMealDetails(meal);
                 } else {
@@ -75,7 +88,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
 
     private boolean hasFullData(Meal meal) {
         String instructions = meal.getStrInstructions();
-        String firstIngredient = meal.getStrIngredient(1); // Using the specific getter if available, or getStrIngredient(1)
+        String firstIngredient = meal.getStrIngredient(1);
 
         boolean hasInstructions = instructions != null && !instructions.trim().isEmpty();
         boolean hasIngredients = firstIngredient != null && !firstIngredient.trim().isEmpty();
@@ -83,9 +96,37 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
         return hasInstructions && hasIngredients;
     }
 
+    private void toggleFavorite() {
+        if (currentMeal == null) return;
+
+        if (isFavorite) {
+            presenter.removeFromFavorites(currentMeal.getIdMeal());
+        } else {
+            presenter.addToFavorites(currentMeal);
+        }
+    }
+
     @Override
     public void showMealDetails(Meal meal) {
+        currentMeal = meal;
         tvTitle.setText(meal.getStrMeal());
+
+        if (meal.getStrCategory() != null && meal.getStrArea() != null) {
+            tvCategory.setText(meal.getStrCategory() + " • " + meal.getStrArea());
+        } else if (meal.getStrCategory() != null) {
+            tvCategory.setText(meal.getStrCategory());
+        } else if (meal.getStrArea() != null) {
+            tvCategory.setText(meal.getStrArea());
+        }
+
+        if (meal.getStrMealThumb() != null && !meal.getStrMealThumb().isEmpty()) {
+            Glide.with(this)
+                    .load(meal.getStrMealThumb())
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .centerCrop()
+                    .into(imgMeal);
+        }
+
         tvInstructions.setText(meal.getStrInstructions());
 
         StringBuilder builder = new StringBuilder();
@@ -102,6 +143,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
         if (youtubeUrl != null && !youtubeUrl.isEmpty()) {
             String videoId = extractVideoId(youtubeUrl);
             if (videoId != null) {
+                videoCard.setVisibility(View.VISIBLE);
                 youtubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
                     @Override
                     public void onReady(@NonNull YouTubePlayer youtubePlayer) {
@@ -109,11 +151,27 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
                     }
                 });
             } else {
-                if (videoCard != null) videoCard.setVisibility(View.GONE);
+                videoCard.setVisibility(View.GONE);
             }
         } else {
-            if (videoCard != null) videoCard.setVisibility(View.GONE);
+            videoCard.setVisibility(View.GONE);
         }
+    }
+
+    @Override
+    public void updateFavoriteStatus(boolean isFavorite) {
+        this.isFavorite = isFavorite;
+        btnFavorite.setImageResource(isFavorite ? R.drawable.favorite : R.drawable.outline_favorite_24);
+    }
+
+    @Override
+    public void showFavoriteAdded() {
+        Toast.makeText(getContext(), "Added to favorites", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showFavoriteRemoved() {
+        Toast.makeText(getContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
     }
 
     @Override

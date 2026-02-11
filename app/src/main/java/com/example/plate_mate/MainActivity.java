@@ -282,7 +282,6 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Unregister network callback to prevent memory leaks
         if (connectivityManager != null && networkCallback != null) {
             connectivityManager.unregisterNetworkCallback(networkCallback);
         }

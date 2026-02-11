@@ -93,5 +93,6 @@
     <string name="onboarding_page_2_description">Get your meals on time with our smart scheduling and reminders.</string>
     <string name="onboarding_page_2_title2">a Meal</string>
     <string name="onboarding_page2_title1">Never Miss</string>
+    <string name="instructions">Instructions</string>
 
 </resources>
