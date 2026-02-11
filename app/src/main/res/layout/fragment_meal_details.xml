@@ -32,18 +32,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/text_primary" />
 
-            <ImageView
-                android:id="@+id/btn_favorite"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="12dp"
-                android:src="@drawable/outline_favorite_24"
-                android:contentDescription="@string/add_to_favorite"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:tint="@color/text_primary" />
-
             <TextView
                 android:id="@+id/tvMealTitle"
                 android:layout_width="0dp"
@@ -56,15 +44,14 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 app:layout_constraintStart_toEndOf="@id/btnBack"
-                app:layout_constraintEnd_toStartOf="@id/btn_favorite"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
                 tools:text="Delicious Spaghetti Carbonara with Extra Long Name" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- YouTube Player Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="220dp"
@@ -79,7 +66,6 @@
                 app:autoPlay="false" />
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Ingredients Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
