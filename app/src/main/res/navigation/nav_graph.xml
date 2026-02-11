@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/nav_planner"
-        android:name="com.example.plate_mate.presentation.planner.PlannerFragment"
+        android:name="com.example.plate_mate.presentation.planner.view.PlannerFragment"
         android:label="Planner"
         tools:layout="@layout/fragment_planner" />
 
@@ -39,7 +39,7 @@
 
     <fragment
         android:id="@+id/nav_profile"
-        android:name="com.example.plate_mate.presentation.profile.ProfileFragment"
+        android:name="com.example.plate_mate.presentation.profile.view.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
 

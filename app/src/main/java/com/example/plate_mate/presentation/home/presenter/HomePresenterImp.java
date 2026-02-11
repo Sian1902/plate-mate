@@ -1,6 +1,7 @@
 package com.example.plate_mate.presentation.home.presenter;
 
 import android.content.Context;
+import android.util.Log;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.data.meal.repository.MealRepoImp;
 import com.example.plate_mate.data.meal.repository.MealRepository;
@@ -20,21 +21,19 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class HomePresenterImp implements HomePresenter {
+    private static final String TAG = "HomePresenterImp";
     private MealRepository mealRepo;
     private final CompositeDisposable disposables = new CompositeDisposable();
     private final CompositeDisposable filterDisposables = new CompositeDisposable();
     private Disposable updateDisposable;
-
     private final PublishSubject<String> searchSubject = PublishSubject.create();
     private HomeView homeView;
-
     private List<Meal> initialMeals = new ArrayList<>();
     private List<Meal> categoryResults = new ArrayList<>();
     private List<Meal> areaResults = new ArrayList<>();
     private List<Meal> ingredientResults = new ArrayList<>();
     private List<Meal> searchResults = new ArrayList<>();
     private Set<String> favoriteMealIds = new HashSet<>();
-
     private String currentCategory = null;
     private String currentArea = null;
     private String currentIngredient = null;
@@ -51,52 +50,76 @@ public class HomePresenterImp implements HomePresenter {
                 .debounce(400, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::fetchSearchMeals, throwable -> {}));
+                .subscribe(this::fetchSearchMeals, throwable -> {
+                    Log.e(TAG, "Search debounce error", throwable);
+                }));
     }
 
     @Override
     public void loadHomeData() {
+        Log.d(TAG, "Loading home data from cache...");
+
         disposables.add(mealRepo.getCachedSplashData()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(data -> {
-                    // 1. Critical Check: Is the view still attached?
-                    if (homeView == null) return;
+                    Log.d(TAG, "Cached data received: " + (data != null ? "success" : "null"));
+
+                    if (homeView == null) {
+                        Log.w(TAG, "HomeView is null, cannot update UI");
+                        return;
+                    }
 
                     if (data != null) {
-                        // 2. Safe check for Filter Options
-                        if (data.getCategories() != null && data.getAreas() != null && data.getIngredients() != null) {
-                            homeView.setFilterOptions(
-                                    data.getCategories().getMeal() != null ? data.getCategories().getMeal() : new ArrayList<>(),
-                                    data.getAreas().getMeals() != null ? data.getAreas().getMeals() : new ArrayList<>(),
-                                    data.getIngredients().getMeals() != null ? data.getIngredients().getMeals() : new ArrayList<>()
-                            );
-                        }
+                        // Set filter options
+                        List categories = (data.getCategories() != null && data.getCategories().getMeal() != null)
+                                ? data.getCategories().getMeal()
+                                : new ArrayList<>();
+                        List areas = (data.getAreas() != null && data.getAreas().getMeals() != null)
+                                ? data.getAreas().getMeals()
+                                : new ArrayList<>();
+                        List ingredients = (data.getIngredients() != null && data.getIngredients().getMeals() != null)
+                                ? data.getIngredients().getMeals()
+                                : new ArrayList<>();
 
-                        // 3. Safe check for Initial Meal List
+                        Log.d(TAG, "Filter options - Categories: " + categories.size() +
+                                ", Areas: " + areas.size() +
+                                ", Ingredients: " + ingredients.size());
+
+                        homeView.setFilterOptions(categories, areas, ingredients);
+
+                        // Set initial meals
                         if (data.getMeals() != null && data.getMeals().getMeals() != null) {
                             initialMeals = new ArrayList<>(data.getMeals().getMeals());
+                            Log.d(TAG, "Initial meals loaded: " + initialMeals.size());
                         } else {
                             initialMeals = new ArrayList<>();
+                            Log.w(TAG, "No initial meals in cached data");
                         }
 
-                        // 4. Safe check for Hero Meal (Random Meal)
+                        // Get hero meal
                         Meal heroMeal = null;
                         if (data.getRandomMeal() != null &&
                                 data.getRandomMeal().getMeals() != null &&
                                 !data.getRandomMeal().getMeals().isEmpty()) {
                             heroMeal = data.getRandomMeal().getMeals().get(0);
+                            Log.d(TAG, "Hero meal: " + (heroMeal != null ? heroMeal.getStrMeal() : "null"));
+                        } else {
+                            Log.w(TAG, "No hero meal in cached data");
                         }
 
-                        // 5. Update UI only if we have at least an empty list to show
                         homeView.setupUi(initialMeals, heroMeal);
-
-                        // 6. Load favorites after setting up UI
                         loadFavorites();
+                    } else {
+                        Log.w(TAG, "Cached data is null, showing empty UI");
+                        homeView.setupUi(new ArrayList<>(), null);
+                        homeView.showError("No offline data available. Please connect to the internet.");
                     }
                 }, e -> {
+                    Log.e(TAG, "Error loading cached data", e);
                     if (homeView != null) {
-                        homeView.showError("Failed to load data: " + e.getMessage());
+                        homeView.setupUi(new ArrayList<>(), null);
+                        homeView.showError("Failed to load cached data: " + e.getMessage());
                     }
                 }));
     }
@@ -108,96 +131,41 @@ public class HomePresenterImp implements HomePresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(favorites -> {
                     if (homeView == null) return;
-
                     favoriteMealIds.clear();
                     for (Meal meal : favorites) {
-                        if (meal.getIdMeal() != null) {
-                            favoriteMealIds.add(meal.getIdMeal());
-                        }
+                        if (meal.getIdMeal() != null) favoriteMealIds.add(meal.getIdMeal());
                     }
+                    Log.d(TAG, "Favorites loaded: " + favoriteMealIds.size());
                     homeView.updateFavorites(favoriteMealIds);
                 }, e -> {
-                    if (homeView != null) {
-                        homeView.showError("Failed to load favorites: " + e.getMessage());
-                    }
+                    Log.e(TAG, "Error loading favorites", e);
                 }));
     }
 
     @Override
     public void toggleFavorite(Meal meal) {
         if (meal == null || meal.getIdMeal() == null) return;
-
-        boolean isFavorite = favoriteMealIds.contains(meal.getIdMeal());
-
-        if (isFavorite) {
-            // Remove from favorites
-            removeFavorite(meal.getIdMeal());
+        if (favoriteMealIds.contains(meal.getIdMeal())) {
+            disposables.add(mealRepo.deleteFavorite(meal.getIdMeal())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(() -> {
+                        favoriteMealIds.remove(meal.getIdMeal());
+                        if (homeView != null) homeView.updateFavorites(favoriteMealIds);
+                    }, e -> {
+                        Log.e(TAG, "Error removing favorite", e);
+                    }));
         } else {
-            // Check if meal is complete before adding
-            if (isMealComplete(meal)) {
-                addFavorite(meal);
-            } else {
-                // Fetch complete meal data first
-                fetchCompleteMealAndAddToFavorites(meal.getIdMeal());
-            }
+            disposables.add(mealRepo.insertFavorite(meal)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(() -> {
+                        favoriteMealIds.add(meal.getIdMeal());
+                        if (homeView != null) homeView.updateFavorites(favoriteMealIds);
+                    }, e -> {
+                        Log.e(TAG, "Error adding favorite", e);
+                    }));
         }
-    }
-
-    private boolean isMealComplete(Meal meal) {
-        // Check if essential fields are present
-        return meal.getStrInstructions() != null && !meal.getStrInstructions().trim().isEmpty();
-    }
-
-    private void fetchCompleteMealAndAddToFavorites(String mealId) {
-        disposables.add(mealRepo.getMealById(mealId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    if (response != null && response.getMeals() != null && !response.getMeals().isEmpty()) {
-                        Meal completeMeal = response.getMeals().get(0);
-                        addFavorite(completeMeal);
-                    } else {
-                        if (homeView != null) {
-                            homeView.showError("Failed to fetch meal details");
-                        }
-                    }
-                }, e -> {
-                    if (homeView != null) {
-                        homeView.showError("Failed to add to favorites: " + e.getMessage());
-                    }
-                }));
-    }
-
-    private void addFavorite(Meal meal) {
-        disposables.add(mealRepo.insertFavorite(meal)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    favoriteMealIds.add(meal.getIdMeal());
-                    if (homeView != null) {
-                        homeView.updateFavorites(favoriteMealIds);
-                    }
-                }, e -> {
-                    if (homeView != null) {
-                        homeView.showError("Failed to add to favorites: " + e.getMessage());
-                    }
-                }));
-    }
-
-    private void removeFavorite(String mealId) {
-        disposables.add(mealRepo.deleteFavorite(mealId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    favoriteMealIds.remove(mealId);
-                    if (homeView != null) {
-                        homeView.updateFavorites(favoriteMealIds);
-                    }
-                }, e -> {
-                    if (homeView != null) {
-                        homeView.showError("Failed to remove from favorites: " + e.getMessage());
-                    }
-                }));
     }
 
     @Override
@@ -231,18 +199,15 @@ public class HomePresenterImp implements HomePresenter {
     public void clearAllFilters() {
         filterDisposables.clear();
         if (updateDisposable != null) updateDisposable.dispose();
-
         currentCategory = null;
         currentArea = null;
         currentIngredient = null;
         currentSearchQuery = "";
-
         categoryResults.clear();
         areaResults.clear();
         ingredientResults.clear();
         searchResults.clear();
-
-        homeView.updateMealList(new ArrayList<>(initialMeals));
+        if (homeView != null) homeView.updateMealList(new ArrayList<>(initialMeals));
     }
 
     private void fetchCategoryMeals(String category) {
@@ -250,9 +215,14 @@ public class HomePresenterImp implements HomePresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(res -> {
-                    categoryResults = (res != null && res.getMeals() != null) ? res.getMeals() : new ArrayList<>();
+                    categoryResults = res.getMeals() != null ? res.getMeals() : new ArrayList<>();
+                    Log.d(TAG, "Category results: " + categoryResults.size());
                     updateResults();
-                }, e -> {}));
+                }, e -> {
+                    Log.e(TAG, "Error fetching category meals", e);
+                    categoryResults = new ArrayList<>();
+                    updateResults();
+                }));
     }
 
     private void fetchAreaMeals(String area) {
@@ -260,9 +230,14 @@ public class HomePresenterImp implements HomePresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(res -> {
-                    areaResults = (res != null && res.getMeals() != null) ? res.getMeals() : new ArrayList<>();
+                    areaResults = res.getMeals() != null ? res.getMeals() : new ArrayList<>();
+                    Log.d(TAG, "Area results: " + areaResults.size());
                     updateResults();
-                }, e -> {}));
+                }, e -> {
+                    Log.e(TAG, "Error fetching area meals", e);
+                    areaResults = new ArrayList<>();
+                    updateResults();
+                }));
     }
 
     private void fetchIngredientMeals(String ingredient) {
@@ -270,9 +245,14 @@ public class HomePresenterImp implements HomePresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(res -> {
-                    ingredientResults = (res != null && res.getMeals() != null) ? res.getMeals() : new ArrayList<>();
+                    ingredientResults = res.getMeals() != null ? res.getMeals() : new ArrayList<>();
+                    Log.d(TAG, "Ingredient results: " + ingredientResults.size());
                     updateResults();
-                }, e -> {}));
+                }, e -> {
+                    Log.e(TAG, "Error fetching ingredient meals", e);
+                    ingredientResults = new ArrayList<>();
+                    updateResults();
+                }));
     }
 
     private void fetchSearchMeals(String query) {
@@ -280,14 +260,18 @@ public class HomePresenterImp implements HomePresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(res -> {
-                    searchResults = (res != null && res.getMeals() != null) ? res.getMeals() : new ArrayList<>();
+                    searchResults = res.getMeals() != null ? res.getMeals() : new ArrayList<>();
+                    Log.d(TAG, "Search results for '" + query + "': " + searchResults.size());
                     updateResults();
-                }, e -> {}));
+                }, e -> {
+                    Log.e(TAG, "Error searching meals", e);
+                    searchResults = new ArrayList<>();
+                    updateResults();
+                }));
     }
 
     private void updateResults() {
         if (updateDisposable != null) updateDisposable.dispose();
-
         updateDisposable = Observable.fromCallable(() -> {
                     List<List<Meal>> active = new ArrayList<>();
                     if (currentCategory != null) active.add(categoryResults);
@@ -295,23 +279,38 @@ public class HomePresenterImp implements HomePresenter {
                     if (currentIngredient != null) active.add(ingredientResults);
                     if (!currentSearchQuery.isEmpty()) active.add(searchResults);
 
-                    if (active.isEmpty()) return initialMeals;
-                    for (List<Meal> list : active) if (list.isEmpty()) return new ArrayList<Meal>();
+                    if (active.isEmpty()) {
+                        Log.d(TAG, "No active filters, returning initial meals: " + initialMeals.size());
+                        return initialMeals;
+                    }
+
+                    for (List<Meal> list : active) {
+                        if (list == null || list.isEmpty()) {
+                            Log.d(TAG, "One of the filter results is empty, returning empty list");
+                            return new ArrayList<Meal>();
+                        }
+                    }
 
                     Map<String, Meal> mealMap = new HashMap<>();
                     for (Meal m : active.get(0)) {
                         if (m.getIdMeal() != null) mealMap.put(m.getIdMeal(), m);
                     }
-
                     for (int i = 1; i < active.size(); i++) {
                         Set<String> nextIds = new HashSet<>();
                         for (Meal m : active.get(i)) nextIds.add(m.getIdMeal());
                         mealMap.keySet().retainAll(nextIds);
                     }
-                    return new ArrayList<>(mealMap.values());
+
+                    List<Meal> result = new ArrayList<>(mealMap.values());
+                    Log.d(TAG, "Filtered results: " + result.size());
+                    return result;
                 }).subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(homeView::updateMealList, e -> {});
+                .subscribe(meals -> {
+                    if (homeView != null) homeView.updateMealList(meals);
+                }, e -> {
+                    Log.e(TAG, "Error updating results", e);
+                });
     }
 
     public void dispose() {

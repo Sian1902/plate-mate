@@ -1,4 +1,4 @@
-package com.example.plate_mate.presentation.onboarding;
+package com.example.plate_mate.presentation.onboarding.view;
 
 public class OnboardingItem {
     private int imageRes;

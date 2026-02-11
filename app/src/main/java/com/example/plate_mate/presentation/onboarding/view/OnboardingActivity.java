@@ -12,12 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.plate_mate.AuthActivity;
-import com.example.plate_mate.MainActivity;
 import com.example.plate_mate.R;
-import com.example.plate_mate.presentation.onboarding.OnboardingAdapter;
 import com.example.plate_mate.presentation.onboarding.presenter.OnboardingPresenter;
 import com.example.plate_mate.presentation.onboarding.presenter.OnboardingPresenterImp;
-import com.example.plate_mate.presentation.splash.view.SplashActivity;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
 public class OnboardingActivity extends AppCompatActivity implements OnboardingView{

@@ -1,4 +1,4 @@
-package com.example.plate_mate.presentation.profile;
+package com.example.plate_mate.presentation.profile.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,12 +21,13 @@ import com.example.plate_mate.data.auth.model.User;
 import com.example.plate_mate.data.auth.repo.AuthRepoImp;
 import com.example.plate_mate.data.meal.datasource.remote.FirebaseSyncDataSource;
 import com.example.plate_mate.data.meal.repository.MealRepoImp;
+import com.example.plate_mate.presentation.profile.presenter.ProfilePresenterImp;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 
-public class ProfileFragment extends Fragment implements ProfileContract.View {
+public class ProfileFragment extends Fragment implements ProfileView {
 
     private TextInputEditText nameEditText;
     private TextInputEditText emailEditText;
@@ -36,11 +37,7 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
     private MaterialButton uploadDataButton; // Only upload button remains
     private ProgressBar progressBar;
 
-    private ProfilePresenter presenter;
-
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
+    private ProfilePresenterImp presenter;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -56,7 +53,7 @@ public class ProfileFragment extends Fragment implements ProfileContract.View {
         MealRepoImp mealRepo = MealRepoImp.getInstance(requireContext());
         FirebaseSyncDataSource firebaseSyncDataSource = new FirebaseSyncDataSource();
 
-        presenter = new ProfilePresenter(authRepo, remoteDataSource, mealRepo, firebaseSyncDataSource);
+        presenter = new ProfilePresenterImp(authRepo, remoteDataSource, mealRepo, firebaseSyncDataSource);
     }
 
     @Override

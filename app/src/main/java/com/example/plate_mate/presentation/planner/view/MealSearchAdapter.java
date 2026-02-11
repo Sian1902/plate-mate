@@ -1,4 +1,4 @@
-package com.example.plate_mate.presentation.planner;
+package com.example.plate_mate.presentation.planner.view;
 
 import android.view.LayoutInflater;
 import android.view.View;

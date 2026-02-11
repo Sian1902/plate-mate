@@ -1,4 +1,4 @@
-package com.example.plate_mate.presentation.onboarding;
+package com.example.plate_mate.presentation.onboarding.view;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

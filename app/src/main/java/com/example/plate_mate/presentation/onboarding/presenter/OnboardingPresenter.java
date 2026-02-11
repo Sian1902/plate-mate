@@ -1,6 +1,6 @@
 package com.example.plate_mate.presentation.onboarding.presenter;
 
-import com.example.plate_mate.presentation.onboarding.OnboardingItem;
+import com.example.plate_mate.presentation.onboarding.view.OnboardingItem;
 
 import java.util.List;
 

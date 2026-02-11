@@ -39,6 +39,7 @@ public class SplashActivity extends AppCompatActivity {
     private Disposable splashDisposable;
     private SplashPresenter splashPresenter;
     private AuthRepo authRepo;
+    private long startTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,26 +62,22 @@ public class SplashActivity extends AppCompatActivity {
         setupAnimation(blurAnimBottom, brandColor);
         setupAnimation(progressBar, brandColor);
 
-        long startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
 
         splashPresenter = new SplashPresenterImp(getApplicationContext());
 
         // Check onboarding first
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         boolean onboardingCompleted = prefs.getBoolean(KEY_ONBOARDING_COMPLETED, false);
-        if (!onboardingCompleted) {
-            long elapsed = System.currentTimeMillis() - startTime;
-            long delay = Math.max(0, MIN_SPLASH_DURATION_MS - elapsed);
 
-            new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
-                goToOnboarding();
-            }, delay);
+        if (!onboardingCompleted) {
+            Log.d(TAG, "Onboarding not completed, preloading data before onboarding...");
+            goToOnboarding();
             return;
         }
 
         if (isUserLoggedIn()) {
             Log.d(TAG, "User is already logged in, skipping auth screen");
-
             preloadDataAndNavigateToMain();
         } else {
             Log.d(TAG, "User is not logged in, will show auth screen");
@@ -92,21 +89,41 @@ public class SplashActivity extends AppCompatActivity {
         return authRepo.isUserLoggedIn();
     }
 
-    private void goToOnboarding(){
+    private void goToOnboarding() {
+        Log.d(TAG, "Starting data preload for onboarding...");
+
         splashDisposable = splashPresenter.preloadData()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         data -> {
-                            Log.d(TAG, "Preload completed successfully while in onboarding");
+                            Log.d(TAG, "Preload completed successfully for onboarding");
+                            logDataInfo(data);
+
+                            // Wait for minimum splash duration, then navigate
+                            long elapsed = System.currentTimeMillis() - startTime;
+                            long delay = Math.max(0, MIN_SPLASH_DURATION_MS - elapsed);
+
+                            new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                startActivity(new Intent(SplashActivity.this, OnboardingActivity.class));
+                                finish();
+                            }, delay);
                         },
                         error -> {
                             Log.e(TAG, "Preload failed during onboarding", error);
+
+                            // Even on error, navigate after minimum duration
+                            long elapsed = System.currentTimeMillis() - startTime;
+                            long delay = Math.max(0, MIN_SPLASH_DURATION_MS - elapsed);
+
+                            new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                startActivity(new Intent(SplashActivity.this, OnboardingActivity.class));
+                                finish();
+                            }, delay);
                         }
                 );
-        startActivity(new Intent(this, OnboardingActivity.class));
-        finish();
     }
+
     private void preloadDataAndNavigateToMain() {
         Log.d(TAG, "Starting to preload data for logged-in user...");
 
@@ -154,7 +171,11 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void logDataInfo(InitialMealData data) {
-        // Your existing logging code here...
+        if (data == null) {
+            Log.w(TAG, "Data is null");
+            return;
+        }
+
         if (data.getCategories() != null && data.getCategories().getMeal() != null) {
             Log.d(TAG, "Categories count: " + data.getCategories().getMeal().size());
             data.getCategories().getMeal().forEach(category ->
@@ -190,6 +211,12 @@ public class SplashActivity extends AppCompatActivity {
         } else {
             Log.w(TAG, "Meals data is null");
         }
+
+        if (data.getRandomMeal() != null && data.getRandomMeal().getMeals() != null) {
+            Log.d(TAG, "Random meal count: " + data.getRandomMeal().getMeals().size());
+        } else {
+            Log.w(TAG, "Random meal data is null");
+        }
     }
 
     private void setupAnimation(LottieAnimationView anim, int brandColor) {
@@ -210,11 +237,7 @@ public class SplashActivity extends AppCompatActivity {
     private void goToAuth() {
         Intent intent = new Intent(SplashActivity.this, AuthActivity.class);
         startActivity(intent);
-
-        // Professional fade transition
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-
-        // Finish splash so the user can't go back to it
         finish();
     }
 

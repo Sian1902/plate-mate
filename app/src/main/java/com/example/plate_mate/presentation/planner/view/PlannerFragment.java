@@ -1,6 +1,5 @@
-package com.example.plate_mate.presentation.planner;
+package com.example.plate_mate.presentation.planner.view;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import com.example.plate_mate.data.meal.datasource.local.PlannedMealLocalDataSto
 import com.example.plate_mate.data.meal.model.MealType;
 import com.example.plate_mate.data.meal.model.PlannedMeal;
 import com.example.plate_mate.data.meal.repository.MealRepoImp;
+import com.example.plate_mate.presentation.planner.presenter.PlannerPresenterImp;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class PlannerFragment extends Fragment implements PlannerContract.View {
+public class PlannerFragment extends Fragment implements PlannerView {
 
-    private PlannerPresenter presenter;
+    private PlannerPresenterImp presenter;
 
     private TextView monthYearTextView;
     private ImageButton backArrow;
@@ -83,7 +83,7 @@ public class PlannerFragment extends Fragment implements PlannerContract.View {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        presenter = new PlannerPresenter(MealRepoImp.getInstance(requireContext()));
+        presenter = new PlannerPresenterImp(MealRepoImp.getInstance(requireContext()));
         initializeWeekTimestamps();
     }
 

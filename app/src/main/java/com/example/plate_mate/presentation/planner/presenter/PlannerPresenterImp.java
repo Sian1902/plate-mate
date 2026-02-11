@@ -1,25 +1,26 @@
-package com.example.plate_mate.presentation.planner;
+package com.example.plate_mate.presentation.planner.presenter;
 
 import com.example.plate_mate.data.meal.model.MealType;
 import com.example.plate_mate.data.meal.model.PlannedMeal;
 import com.example.plate_mate.data.meal.repository.MealRepository;
+import com.example.plate_mate.presentation.planner.view.PlannerView;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class PlannerPresenter implements PlannerContract.Presenter {
+public class PlannerPresenterImp implements PlannerPresenter {
 
-    private PlannerContract.View view;
+    private PlannerView view;
     private final MealRepository repository;
     private final CompositeDisposable disposables = new CompositeDisposable();
 
-    public PlannerPresenter(MealRepository repository) {
+    public PlannerPresenterImp(MealRepository repository) {
         this.repository = repository;
     }
 
     @Override
-    public void attachView(PlannerContract.View view) {
+    public void attachView(PlannerView view) {
         this.view = view;
     }
 

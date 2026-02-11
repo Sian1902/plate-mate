@@ -1,4 +1,4 @@
-package com.example.plate_mate.presentation.profile;
+package com.example.plate_mate.presentation.profile.presenter;
 import com.example.plate_mate.data.auth.datastore.remote.AuthRemoteDataSource;
 import com.example.plate_mate.data.auth.model.User;
 import com.example.plate_mate.data.auth.repo.AuthRepo;
@@ -8,6 +8,7 @@ import com.example.plate_mate.data.meal.model.FirebasePlannedMeal;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.data.meal.model.PlannedMeal;
 import com.example.plate_mate.data.meal.repository.MealRepository;
+import com.example.plate_mate.presentation.profile.view.ProfileView;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
@@ -20,19 +21,19 @@ import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class ProfilePresenter implements ProfileContract.Presenter {
+public class ProfilePresenterImp implements ProfilePresenter {
 
-    private ProfileContract.View view;
+    private ProfileView view;
     private final AuthRepo authRepo;
     private final AuthRemoteDataSource remoteDataSource;
     private final MealRepository mealRepository;
     private final FirebaseSyncDataSource firebaseSyncDataSource;
     private final CompositeDisposable disposables = new CompositeDisposable();
 
-    public ProfilePresenter(AuthRepo authRepo,
-                            AuthRemoteDataSource remoteDataSource,
-                            MealRepository mealRepository,
-                            FirebaseSyncDataSource firebaseSyncDataSource) {
+    public ProfilePresenterImp(AuthRepo authRepo,
+                               AuthRemoteDataSource remoteDataSource,
+                               MealRepository mealRepository,
+                               FirebaseSyncDataSource firebaseSyncDataSource) {
         this.authRepo = authRepo;
         this.remoteDataSource = remoteDataSource;
         this.mealRepository = mealRepository;
@@ -40,7 +41,7 @@ public class ProfilePresenter implements ProfileContract.Presenter {
     }
 
     @Override
-    public void attachView(ProfileContract.View view) {
+    public void attachView(ProfileView view) {
         this.view = view;
         loadUserProfile();
         boolean isDarkModeEnabled = authRepo.isDarkModeEnabled();

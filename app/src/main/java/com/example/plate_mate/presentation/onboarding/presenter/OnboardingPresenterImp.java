@@ -1,11 +1,10 @@
 package com.example.plate_mate.presentation.onboarding.presenter;
 
 import com.example.plate_mate.R;
-import com.example.plate_mate.presentation.onboarding.OnboardingItem;
+import com.example.plate_mate.presentation.onboarding.view.OnboardingItem;
 import com.example.plate_mate.presentation.onboarding.view.OnboardingView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class OnboardingPresenterImp implements OnboardingPresenter{
