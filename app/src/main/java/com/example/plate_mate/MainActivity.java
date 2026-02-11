@@ -1,8 +1,15 @@
 package com.example.plate_mate;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.navigation.NavController;
@@ -37,6 +44,11 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
     private FirebaseSyncDataSource firebaseSyncDataSource;
     private MealRepoImp mealRepository;
 
+    private ConnectivityManager connectivityManager;
+    private ConnectivityManager.NetworkCallback networkCallback;
+    private AlertDialog noConnectionDialog;
+    private boolean isConnected = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
         authRemoteDataSource = new AuthRemoteDataSource();
         firebaseSyncDataSource = new FirebaseSyncDataSource();
         mealRepository = MealRepoImp.getInstance(this);
+
+        // Initialize network monitoring
+        setupNetworkMonitoring();
 
         checkUserAndDownloadData();
 
@@ -56,6 +71,108 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
             bottomNav = findViewById(R.id.bottomNavigation);
             toolbar = findViewById(R.id.mainToolbar);
             NavigationUI.setupWithNavController(bottomNav, navController);
+        }
+    }
+
+    private void setupNetworkMonitoring() {
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        networkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(@NonNull Network network) {
+                super.onAvailable(network);
+                runOnUiThread(() -> {
+                    isConnected = true;
+                    dismissNoConnectionDialog();
+                });
+            }
+
+            @Override
+            public void onLost(@NonNull Network network) {
+                super.onLost(network);
+                runOnUiThread(() -> {
+                    isConnected = false;
+                    showNoConnectionDialog();
+                });
+            }
+
+            @Override
+            public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
+                super.onCapabilitiesChanged(network, networkCapabilities);
+                boolean hasInternet = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                        networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+
+                runOnUiThread(() -> {
+                    if (hasInternet && !isConnected) {
+                        isConnected = true;
+                        dismissNoConnectionDialog();
+                    } else if (!hasInternet && isConnected) {
+                        isConnected = false;
+                        showNoConnectionDialog();
+                    }
+                });
+            }
+        };
+
+        NetworkRequest networkRequest = new NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .build();
+
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
+
+        // Check initial connectivity state
+        checkInitialConnectivity();
+    }
+
+    private void checkInitialConnectivity() {
+        Network network = connectivityManager.getActiveNetwork();
+        if (network == null) {
+            isConnected = false;
+            showNoConnectionDialog();
+            return;
+        }
+
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        if (capabilities == null) {
+            isConnected = false;
+            showNoConnectionDialog();
+            return;
+        }
+
+        isConnected = capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+
+        if (!isConnected) {
+            showNoConnectionDialog();
+        }
+    }
+
+    private void showNoConnectionDialog() {
+        if (noConnectionDialog != null && noConnectionDialog.isShowing()) {
+            return; // Dialog already showing
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("No Internet Connection")
+                .setMessage("Please check your internet connection and try again.")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setCancelable(false)
+                .setPositiveButton("Retry", (dialog, which) -> {
+                    checkInitialConnectivity();
+                })
+                .setNegativeButton("Close", (dialog, which) -> {
+                    dialog.dismiss();
+                });
+
+        noConnectionDialog = builder.create();
+        noConnectionDialog.show();
+    }
+
+    private void dismissNoConnectionDialog() {
+        if (noConnectionDialog != null && noConnectionDialog.isShowing()) {
+            noConnectionDialog.dismiss();
         }
     }
 
@@ -160,5 +277,15 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
     @Override
     public boolean onSupportNavigateUp() {
         return Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Unregister network callback to prevent memory leaks
+        if (connectivityManager != null && networkCallback != null) {
+            connectivityManager.unregisterNetworkCallback(networkCallback);
+        }
+        dismissNoConnectionDialog();
     }
 }
