@@ -12,7 +12,6 @@ import com.example.plate_mate.data.meal.model.PlannedMeal;
 
 import java.util.List;
 
-import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
@@ -50,6 +49,7 @@ public interface PlannedMealDao {
 
     @Query("DELETE FROM planned_meals WHERE date < :date")
     void deleteOldPlannedMeals(Long date);
+
     @Query("DELETE FROM planned_meals")
     void deleteAllPlannedMeals();
 

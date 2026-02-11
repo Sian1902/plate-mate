@@ -5,12 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
+
 import com.example.plate_mate.MainActivity;
 import com.example.plate_mate.R;
 import com.example.plate_mate.data.auth.datastore.local.AuthPrefManager;
@@ -28,18 +29,15 @@ import com.google.android.material.textfield.TextInputLayout;
 
 public class SignInFragment extends Fragment implements SignInView {
 
+    private static final int RC_SIGN_IN = 100;
     private SignInPresenter presenter;
     private TextInputLayout tilEmail, tilPassword;
     private GoogleSignInClient googleSignInClient;
-    private static final int RC_SIGN_IN = 100;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso);
     }
 
@@ -52,17 +50,12 @@ public class SignInFragment extends Fragment implements SignInView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        presenter = new SignInPresenterImp(
-                new AuthRepoImp(new AuthRemoteDataSource(), AuthPrefManager.getInstance(getContext())),
-                this
-        );
+        presenter = new SignInPresenterImp(new AuthRepoImp(new AuthRemoteDataSource(), AuthPrefManager.getInstance(getContext())), this);
 
         tilEmail = view.findViewById(R.id.emailLayout);
         tilPassword = view.findViewById(R.id.passwordLayout);
 
-        view.findViewById(R.id.btnSignIn).setOnClickListener(v ->
-                presenter.login(tilEmail.getEditText().getText().toString().trim(), tilPassword.getEditText().getText().toString().trim())
-        );
+        view.findViewById(R.id.btnSignIn).setOnClickListener(v -> presenter.login(tilEmail.getEditText().getText().toString().trim(), tilPassword.getEditText().getText().toString().trim()));
 
         view.findViewById(R.id.btnGoogleSignIn).setOnClickListener(v -> {
             Intent signInIntent = googleSignInClient.getSignInIntent();
@@ -76,9 +69,7 @@ public class SignInFragment extends Fragment implements SignInView {
         });
 
 
-
-        view.findViewById(R.id.tvSignUpLink).setOnClickListener(v ->
-                Navigation.findNavController(v).navigate(R.id.action_signin_to_signup));
+        view.findViewById(R.id.tvSignUpLink).setOnClickListener(v -> Navigation.findNavController(v).navigate(R.id.action_signin_to_signup));
     }
 
     @Override
@@ -106,10 +97,4 @@ public class SignInFragment extends Fragment implements SignInView {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void setLoading(boolean isLoading) {
-        // Toggle your Lottie animation or ProgressBar here
-        View loader = getView().findViewById(R.id.lottieProgressBar);
-        if (loader != null) loader.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-    }
 }

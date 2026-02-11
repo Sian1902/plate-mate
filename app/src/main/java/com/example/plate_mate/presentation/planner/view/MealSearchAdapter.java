@@ -18,12 +18,8 @@ import java.util.List;
 
 public class MealSearchAdapter extends RecyclerView.Adapter<MealSearchAdapter.ViewHolder> {
 
-    private List<Meal> meals = new ArrayList<>();
     private final OnMealSelectedListener listener;
-
-    public interface OnMealSelectedListener {
-        void onMealSelected(Meal meal);
-    }
+    private List<Meal> meals = new ArrayList<>();
 
     public MealSearchAdapter(OnMealSelectedListener listener) {
         this.listener = listener;
@@ -32,8 +28,7 @@ public class MealSearchAdapter extends RecyclerView.Adapter<MealSearchAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_search_result, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_result, parent, false);
         return new ViewHolder(view);
     }
 
@@ -52,6 +47,10 @@ public class MealSearchAdapter extends RecyclerView.Adapter<MealSearchAdapter.Vi
         notifyDataSetChanged();
     }
 
+    public interface OnMealSelectedListener {
+        void onMealSelected(Meal meal);
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         private final ShapeableImageView mealImage;
         private final TextView mealName;
@@ -68,11 +67,7 @@ public class MealSearchAdapter extends RecyclerView.Adapter<MealSearchAdapter.Vi
             mealName.setText(meal.getStrMeal());
             mealCategory.setText(meal.getStrCategory());
 
-            Glide.with(itemView.getContext())
-                    .load(meal.getStrMealThumb())
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.chef)
-                    .into(mealImage);
+            Glide.with(itemView.getContext()).load(meal.getStrMealThumb()).placeholder(R.drawable.ic_launcher_background).error(R.drawable.chef).into(mealImage);
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {

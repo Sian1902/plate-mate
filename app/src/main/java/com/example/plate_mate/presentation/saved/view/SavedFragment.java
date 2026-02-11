@@ -1,6 +1,10 @@
 package com.example.plate_mate.presentation.saved.view;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,17 +13,11 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
 import com.example.plate_mate.R;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.presentation.home.view.MealAdapter;
 import com.example.plate_mate.presentation.saved.presenter.SavedPresenter;
 import com.example.plate_mate.presentation.saved.presenter.SavedPresenterImp;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +30,9 @@ public class SavedFragment extends Fragment implements SavedView {
     private MealAdapter adapter;
     private SavedPresenter presenter;
 
-    public SavedFragment() {
-        // Required empty public constructor
-    }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_saved, container, false);
     }
 
@@ -47,25 +40,15 @@ public class SavedFragment extends Fragment implements SavedView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize views
         rvFavorites = view.findViewById(R.id.rvFavorites);
         layoutEmptyState = view.findViewById(R.id.layoutEmptyState);
 
-        // Setup RecyclerView
         rvFavorites.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Initialize adapter with click listeners
-        adapter = new MealAdapter(
-                new ArrayList<>(),
-                this::navigateToMealDetails,
-                this::onFavoriteClick
-        );
+        adapter = new MealAdapter(new ArrayList<>(), this::navigateToMealDetails, this::onFavoriteClick);
         rvFavorites.setAdapter(adapter);
 
-        // Initialize presenter
         presenter = new SavedPresenterImp(requireContext(), this);
 
-        // Load favorites
         presenter.loadFavorites();
     }
 

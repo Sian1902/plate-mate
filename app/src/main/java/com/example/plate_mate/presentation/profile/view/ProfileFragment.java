@@ -2,16 +2,15 @@ package com.example.plate_mate.presentation.profile.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.fragment.app.Fragment;
 
 import com.example.plate_mate.AuthActivity;
 import com.example.plate_mate.R;
@@ -34,14 +33,11 @@ public class ProfileFragment extends Fragment implements ProfileView {
     private SwitchMaterial darkModeSwitch;
     private LinearLayout resetPasswordLayout;
     private LinearLayout logoutLayout;
-    private MaterialButton uploadDataButton; // Only upload button remains
+    private MaterialButton uploadDataButton;
     private ProgressBar progressBar;
 
     private ProfilePresenterImp presenter;
 
-    public static ProfileFragment newInstance() {
-        return new ProfileFragment();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,8 +53,7 @@ public class ProfileFragment extends Fragment implements ProfileView {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
         initViews(view);
@@ -93,22 +88,12 @@ public class ProfileFragment extends Fragment implements ProfileView {
     }
 
     private void showUploadConfirmationDialog() {
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Upload to Firebase")
-                .setMessage("This will upload all your local favorites and planned meals to Firebase. Continue?")
-                .setPositiveButton("Upload", (dialog, which) -> presenter.onUploadDataClicked())
-                .setNegativeButton("Cancel", null)
-                .show();
+        new MaterialAlertDialogBuilder(requireContext()).setTitle("Upload to Firebase").setMessage("This will upload all your local favorites and planned meals to Firebase. Continue?").setPositiveButton("Upload", (dialog, which) -> presenter.onUploadDataClicked()).setNegativeButton("Cancel", null).show();
     }
 
     private void showLogoutConfirmationDialog() {
         // First check if there's unsynced data
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Sign Out")
-                .setMessage("Signing out will clear all your local data. Make sure you've uploaded your data to the cloud first. Sign out anyway?")
-                .setPositiveButton("Sign Out", (dialog, which) -> presenter.onLogoutClicked())
-                .setNegativeButton("Cancel", null)
-                .show();
+        new MaterialAlertDialogBuilder(requireContext()).setTitle("Sign Out").setMessage("Signing out will clear all your local data. Make sure you've uploaded your data to the cloud first. Sign out anyway?").setPositiveButton("Sign Out", (dialog, which) -> presenter.onLogoutClicked()).setNegativeButton("Cancel", null).show();
     }
 
     @Override
@@ -156,14 +141,9 @@ public class ProfileFragment extends Fragment implements ProfileView {
 
     @Override
     public void showUploadComplete(int favoritesCount, int plannedMealsCount) {
-        String message = String.format("Upload complete!\n✓ %d favorites\n✓ %d planned meals",
-                favoritesCount, plannedMealsCount);
+        String message = String.format("Upload complete!\n✓ %d favorites\n✓ %d planned meals", favoritesCount, plannedMealsCount);
 
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Upload Successful")
-                .setMessage(message)
-                .setPositiveButton("OK", null)
-                .show();
+        new MaterialAlertDialogBuilder(requireContext()).setTitle("Upload Successful").setMessage(message).setPositiveButton("OK", null).show();
     }
 
     private void applyDarkMode(boolean isEnabled) {

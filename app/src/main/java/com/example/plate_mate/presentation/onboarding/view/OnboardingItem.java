@@ -1,10 +1,10 @@
 package com.example.plate_mate.presentation.onboarding.view;
 
 public class OnboardingItem {
-    private int imageRes;
-    private int title1;
-    private int title2;
-    private int description;
+    private final int imageRes;
+    private final int title1;
+    private final int title2;
+    private final int description;
 
     public OnboardingItem(int imageRes, int title1, int title2, int description) {
         this.imageRes = imageRes;

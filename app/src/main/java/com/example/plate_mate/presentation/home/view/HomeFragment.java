@@ -95,29 +95,30 @@ public class HomeFragment extends Fragment implements HomeView {
 
     private void setupSearch() {
         etSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isClearing) return;
                 ivClearSearch.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
                 homePresenter.searchMeals(s.toString());
             }
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
         ivClearSearch.setOnClickListener(v -> etSearch.setText(""));
     }
 
     private void setupChips() {
-        chipCountry.setOnClickListener(v -> showFilterDialog("Country",
-                areas.stream().map(Area::getStrArea).toArray(String[]::new),
-                (name) -> homePresenter.filterMeals(null, name, null), chipCountry));
+        chipCountry.setOnClickListener(v -> showFilterDialog("Country", areas.stream().map(Area::getStrArea).toArray(String[]::new), (name) -> homePresenter.filterMeals(null, name, null), chipCountry));
 
-        chipCategory.setOnClickListener(v -> showFilterDialog("Category",
-                categories.stream().map(Category::getStrCategory).toArray(String[]::new),
-                (name) -> homePresenter.filterMeals(name, null, null), chipCategory));
+        chipCategory.setOnClickListener(v -> showFilterDialog("Category", categories.stream().map(Category::getStrCategory).toArray(String[]::new), (name) -> homePresenter.filterMeals(name, null, null), chipCategory));
 
-        chipIngredients.setOnClickListener(v -> showFilterDialog("Ingredient",
-                ingredients.stream().map(Ingredient::getStrIngredient).toArray(String[]::new),
-                (name) -> homePresenter.filterMeals(null, null, name), chipIngredients));
+        chipIngredients.setOnClickListener(v -> showFilterDialog("Ingredient", ingredients.stream().map(Ingredient::getStrIngredient).toArray(String[]::new), (name) -> homePresenter.filterMeals(null, null, name), chipIngredients));
     }
 
     private void showFilterDialog(String title, String[] items, FilterAction action, com.google.android.material.chip.Chip chip) {
@@ -125,26 +126,23 @@ public class HomeFragment extends Fragment implements HomeView {
             Toast.makeText(getContext(), "No " + title.toLowerCase() + " data available offline", Toast.LENGTH_SHORT).show();
             return;
         }
-        new AlertDialog.Builder(requireContext())
-                .setTitle(title)
-                .setItems(items, (d, i) -> {
-                    String selected = items[i];
-                    chip.setText(selected);
-                    chip.setChecked(true);
-                    action.onFilterSelected(selected);
-                }).show();
-    }
-
-    private interface FilterAction {
-        void onFilterSelected(String name);
+        new AlertDialog.Builder(requireContext()).setTitle(title).setItems(items, (d, i) -> {
+            String selected = items[i];
+            chip.setText(selected);
+            chip.setChecked(true);
+            action.onFilterSelected(selected);
+        }).show();
     }
 
     private void resetFiltersUI() {
         etSearch.setText("");
         ivClearSearch.setVisibility(View.GONE);
-        chipCountry.setText("Country"); chipCountry.setChecked(false);
-        chipCategory.setText("Category"); chipCategory.setChecked(false);
-        chipIngredients.setText("Ingredients"); chipIngredients.setChecked(false);
+        chipCountry.setText("Country");
+        chipCountry.setChecked(false);
+        chipCategory.setText("Category");
+        chipCategory.setChecked(false);
+        chipIngredients.setText("Ingredients");
+        chipIngredients.setChecked(false);
     }
 
     @Override
@@ -161,7 +159,6 @@ public class HomeFragment extends Fragment implements HomeView {
             Log.d(TAG, "No hero meal to display");
         }
 
-        // Initialize adapter with preloaded meals
         adapter = new MealAdapter(new ArrayList<>(meals), this::navigate, this::onFavoriteClick);
         rvMeals.setAdapter(adapter);
 
@@ -203,9 +200,7 @@ public class HomeFragment extends Fragment implements HomeView {
         this.areas = a != null ? a : new ArrayList<>();
         this.ingredients = i != null ? i : new ArrayList<>();
 
-        Log.d(TAG, "Filter options set - Categories: " + categories.size() +
-                ", Areas: " + areas.size() +
-                ", Ingredients: " + ingredients.size());
+        Log.d(TAG, "Filter options set - Categories: " + categories.size() + ", Areas: " + areas.size() + ", Ingredients: " + ingredients.size());
     }
 
     @Override
@@ -222,5 +217,9 @@ public class HomeFragment extends Fragment implements HomeView {
         if (homePresenter instanceof HomePresenterImp) {
             ((HomePresenterImp) homePresenter).dispose();
         }
+    }
+
+    private interface FilterAction {
+        void onFilterSelected(String name);
     }
 }

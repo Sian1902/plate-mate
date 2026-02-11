@@ -11,11 +11,7 @@ public interface PlannerView {
     void showPlannedMealsForDate(Long date, List<PlannedMeal> meals);
     void showError(String message);
     void showSuccess(String message);
-    void showMealAddedSuccess();
-    void showMealRemovedSuccess();
-    void showMealUpdatedSuccess();
-    void showDateOutOfRangeError();
-    void navigateToMealDetails(PlannedMeal plannedMeal);
+
     void showEmptyState();
-    void updateMealCount(int count);
+
 }

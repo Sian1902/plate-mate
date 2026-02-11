@@ -32,53 +32,40 @@ import java.util.Map;
 
 public class PlannerFragment extends Fragment implements PlannerView {
 
+    private final View[] dayViews = new View[7];
+    private final TextView[] dayNameTextViews = new TextView[7];
+    private final TextView[] dayNumberTextViews = new TextView[7];
+    private final SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+    private final SimpleDateFormat dayNameFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+    private final long[] weekTimestamps = new long[7];
+    private final Map<Long, Boolean> daysWithMeals = new HashMap<>();
     private PlannerPresenterImp presenter;
-
     private TextView monthYearTextView;
     private ImageButton backArrow;
     private ImageButton rightArrow;
-
-    private View[] dayViews = new View[7];
-    private TextView[] dayNameTextViews = new TextView[7];
-    private TextView[] dayNumberTextViews = new TextView[7];
-
     private ConstraintLayout breakfastCard;
     private ConstraintLayout lunchCard;
     private ConstraintLayout dinnerCard;
-
     private TextView breakfastMealType;
     private TextView breakfastMealName;
     private TextView breakfastMealTime;
     private MaterialButton breakfastSwapBtn;
     private ShapeableImageView breakfastMealImage;
-
     private TextView lunchMealType;
     private TextView lunchMealName;
     private TextView lunchMealTime;
     private MaterialButton lunchSwapBtn;
     private ShapeableImageView lunchMealImage;
-
     private TextView dinnerMealType;
     private TextView dinnerMealName;
     private TextView dinnerMealTime;
     private MaterialButton dinnerSwapBtn;
     private ShapeableImageView dinnerMealImage;
-
-    private SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
-    private SimpleDateFormat dayNameFormat = new SimpleDateFormat("EEE", Locale.getDefault());
-
-    private int currentDayIndex = 0; // Currently selected day (0-6)
-    private long[] weekTimestamps = new long[7];
-
-    private Map<Long, Boolean> daysWithMeals = new HashMap<>();
-
+    private int currentDayIndex = 0;
     private PlannedMeal currentBreakfast;
     private PlannedMeal currentLunch;
     private PlannedMeal currentDinner;
 
-    public static PlannerFragment newInstance() {
-        return new PlannerFragment();
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,8 +75,7 @@ public class PlannerFragment extends Fragment implements PlannerView {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_planner, container, false);
 
         initViews(view);
@@ -158,9 +144,9 @@ public class PlannerFragment extends Fragment implements PlannerView {
         dinnerSwapBtn = dinnerCard.findViewById(R.id.swap_btn);
         dinnerMealImage = dinnerCard.findViewById(R.id.meal_image);
 
-        breakfastMealType.setText("🌅 Breakfast");
-        lunchMealType.setText("☀️ Lunch");
-        dinnerMealType.setText("🌙 Dinner");
+        breakfastMealType.setText("Breakfast");
+        lunchMealType.setText("Lunch");
+        dinnerMealType.setText("Dinner");
     }
 
     private void setupListeners() {
@@ -244,20 +230,12 @@ public class PlannerFragment extends Fragment implements PlannerView {
     }
 
     private void onAddOrSwapMeal(MealType mealType) {
-        MealSearchDialog dialog = new MealSearchDialog(
-                requireContext(),
-                MealRepoImp.getInstance(requireContext()),
-                weekTimestamps[currentDayIndex],
-                mealType,
-                () -> {
-                    selectDay(currentDayIndex);
-                    loadWeekMeals();
-                }
-        );
+        MealSearchDialog dialog = new MealSearchDialog(requireContext(), MealRepoImp.getInstance(requireContext()), weekTimestamps[currentDayIndex], mealType, () -> {
+            selectDay(currentDayIndex);
+            loadWeekMeals();
+        });
         dialog.show();
     }
-
-
 
 
     @Override
@@ -286,12 +264,9 @@ public class PlannerFragment extends Fragment implements PlannerView {
         currentLunch = null;
         currentDinner = null;
 
-        resetMealCardToAdd(breakfastCard, breakfastMealName, breakfastMealTime,
-                breakfastMealImage, breakfastSwapBtn, "Add Breakfast");
-        resetMealCardToAdd(lunchCard, lunchMealName, lunchMealTime,
-                lunchMealImage, lunchSwapBtn, "Add Lunch");
-        resetMealCardToAdd(dinnerCard, dinnerMealName, dinnerMealTime,
-                dinnerMealImage, dinnerSwapBtn, "Add Dinner");
+        resetMealCardToAdd(breakfastCard, breakfastMealName, breakfastMealTime, breakfastMealImage, breakfastSwapBtn, "Add Breakfast");
+        resetMealCardToAdd(lunchCard, lunchMealName, lunchMealTime, lunchMealImage, lunchSwapBtn, "Add Lunch");
+        resetMealCardToAdd(dinnerCard, dinnerMealName, dinnerMealTime, dinnerMealImage, dinnerSwapBtn, "Add Dinner");
 
         for (PlannedMeal plannedMeal : meals) {
             if (plannedMeal.getMeal() == null) continue;
@@ -299,18 +274,15 @@ public class PlannerFragment extends Fragment implements PlannerView {
             switch (plannedMeal.getMealType()) {
                 case BREAKFAST:
                     currentBreakfast = plannedMeal;
-                    populateMealCard(breakfastMealName, breakfastMealTime,
-                            breakfastMealImage, breakfastSwapBtn, plannedMeal);
+                    populateMealCard(breakfastMealName, breakfastMealTime, breakfastMealImage, breakfastSwapBtn, plannedMeal);
                     break;
                 case LUNCH:
                     currentLunch = plannedMeal;
-                    populateMealCard(lunchMealName, lunchMealTime,
-                            lunchMealImage, lunchSwapBtn, plannedMeal);
+                    populateMealCard(lunchMealName, lunchMealTime, lunchMealImage, lunchSwapBtn, plannedMeal);
                     break;
                 case DINNER:
                     currentDinner = plannedMeal;
-                    populateMealCard(dinnerMealName, dinnerMealTime,
-                            dinnerMealImage, dinnerSwapBtn, plannedMeal);
+                    populateMealCard(dinnerMealName, dinnerMealTime, dinnerMealImage, dinnerSwapBtn, plannedMeal);
                     break;
             }
         }
@@ -320,9 +292,7 @@ public class PlannerFragment extends Fragment implements PlannerView {
         updateDayHighlights();
     }
 
-    private void resetMealCardToAdd(ConstraintLayout card, TextView nameView,
-                                    TextView timeView, ShapeableImageView imageView,
-                                    MaterialButton swapBtn, String addText) {
+    private void resetMealCardToAdd(ConstraintLayout card, TextView nameView, TextView timeView, ShapeableImageView imageView, MaterialButton swapBtn, String addText) {
         nameView.setText(addText);
         timeView.setText("Tap to search meals");
         imageView.setImageResource(R.drawable.chef);
@@ -330,17 +300,11 @@ public class PlannerFragment extends Fragment implements PlannerView {
         swapBtn.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.add));
     }
 
-    private void populateMealCard(TextView nameView, TextView timeView,
-                                  ShapeableImageView imageView, MaterialButton swapBtn,
-                                  PlannedMeal plannedMeal) {
+    private void populateMealCard(TextView nameView, TextView timeView, ShapeableImageView imageView, MaterialButton swapBtn, PlannedMeal plannedMeal) {
         nameView.setText(plannedMeal.getMeal().getStrMeal());
         timeView.setText("30 min");
 
-        Glide.with(requireContext())
-                .load(plannedMeal.getMeal().getStrMealThumb())
-                .placeholder(R.drawable.ic_launcher_background)
-                .error(R.drawable.chef)
-                .into(imageView);
+        Glide.with(requireContext()).load(plannedMeal.getMeal().getStrMealThumb()).placeholder(R.drawable.ic_launcher_background).error(R.drawable.chef).into(imageView);
 
         swapBtn.setText("Swap");
         swapBtn.setIcon(ContextCompat.getDrawable(requireContext(), R.drawable.rotate_right));
@@ -356,48 +320,10 @@ public class PlannerFragment extends Fragment implements PlannerView {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void showMealAddedSuccess() {
-        Toast.makeText(requireContext(), "Meal added to plan", Toast.LENGTH_SHORT).show();
-        selectDay(currentDayIndex);
-        loadWeekMeals();
-    }
-
-    @Override
-    public void showMealRemovedSuccess() {
-        Toast.makeText(requireContext(), "Meal removed from plan", Toast.LENGTH_SHORT).show();
-        selectDay(currentDayIndex);
-        loadWeekMeals();
-    }
-
-    @Override
-    public void showMealUpdatedSuccess() {
-        Toast.makeText(requireContext(), "Meal plan updated", Toast.LENGTH_SHORT).show();
-        selectDay(currentDayIndex);
-        loadWeekMeals();
-    }
-
-    @Override
-    public void showDateOutOfRangeError() {
-        Toast.makeText(requireContext(),
-                "You can only plan meals for the next 7 days",
-                Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void navigateToMealDetails(PlannedMeal plannedMeal) {
-        Toast.makeText(requireContext(),
-                "Opening: " + plannedMeal.getMeal().getStrMeal(),
-                Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void showEmptyState() {
 
     }
 
-    @Override
-    public void updateMealCount(int count) {
-
-    }
 }

@@ -22,6 +22,24 @@ public class PlannedMealLocalDataStore {
         this.plannedMealDao = database.plannedMealDao();
     }
 
+    public static long getStartOfDay(long timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
+    }
+
+    public static long getDateTimestamp(int daysFromToday) {
+        if (daysFromToday < 0 || daysFromToday >= MAX_PLANNING_DAYS) {
+            throw new IllegalArgumentException("Days from today must be between 0 and " + (MAX_PLANNING_DAYS - 1));
+        }
+        long today = getStartOfDay(System.currentTimeMillis());
+        return today + (daysFromToday * 24 * 60 * 60 * 1000L);
+    }
+
     public void insertPlannedMeal(PlannedMeal plannedMeal) {
         validateDateWithinSevenDays(plannedMeal.getDate());
         plannedMeal.setCreatedAt(System.currentTimeMillis());
@@ -54,7 +72,6 @@ public class PlannedMealLocalDataStore {
         return plannedMealDao.getPlannedMealsInRange(dateRange[0], dateRange[1]);
     }
 
-
     public Single<List<PlannedMeal>> getPlannedMealsByDate(Long date) {
         return plannedMealDao.getPlannedMealsByDate(date);
     }
@@ -62,7 +79,6 @@ public class PlannedMealLocalDataStore {
     public Single<PlannedMeal> getPlannedMealByDateAndType(Long date, MealType mealType) {
         return plannedMealDao.getPlannedMealByDateAndType(date, mealType);
     }
-
 
     public Single<Boolean> isPlannedMealExists(Long date, MealType mealType) {
         return plannedMealDao.isPlannedMealExists(date, mealType);
@@ -76,7 +92,6 @@ public class PlannedMealLocalDataStore {
         long today = getStartOfDay(System.currentTimeMillis());
         plannedMealDao.deleteOldPlannedMeals(today);
     }
-
 
     public void deleteAllPlannedMeals() {
         plannedMealDao.deleteAllPlannedMeals();
@@ -103,24 +118,5 @@ public class PlannedMealLocalDataStore {
         long startOfToday = getStartOfDay(System.currentTimeMillis());
         long endOfSevenDays = getStartOfDay(startOfToday + (MAX_PLANNING_DAYS * 24 * 60 * 60 * 1000L));
         return new long[]{startOfToday, endOfSevenDays};
-    }
-
-    public static long getStartOfDay(long timestamp) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestamp);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTimeInMillis();
-    }
-
-
-    public static long getDateTimestamp(int daysFromToday) {
-        if (daysFromToday < 0 || daysFromToday >= MAX_PLANNING_DAYS) {
-            throw new IllegalArgumentException("Days from today must be between 0 and " + (MAX_PLANNING_DAYS - 1));
-        }
-        long today = getStartOfDay(System.currentTimeMillis());
-        return today + (daysFromToday * 24 * 60 * 60 * 1000L);
     }
 }

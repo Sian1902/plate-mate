@@ -20,18 +20,10 @@ import java.util.Set;
 
 public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder> {
 
-    private List<Meal> mealList;
     private final OnMealClickListener listener;
     private final OnFavoriteClickListener favoriteListener;
     private final Set<String> favoriteMealIds = new HashSet<>();
-
-    public interface OnMealClickListener {
-        void onMealClick(Meal meal);
-    }
-
-    public interface OnFavoriteClickListener {
-        void onFavoriteClick(Meal meal, boolean isFavorite);
-    }
+    private List<Meal> mealList;
 
     public MealAdapter(List<Meal> mealList, OnMealClickListener listener, OnFavoriteClickListener favoriteListener) {
         this.mealList = mealList != null ? mealList : new ArrayList<>();
@@ -64,8 +56,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
     @NonNull
     @Override
     public MealViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_meal, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_meal, parent, false);
         return new MealViewHolder(view);
     }
 
@@ -79,6 +70,14 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
     @Override
     public int getItemCount() {
         return mealList.size();
+    }
+
+    public interface OnMealClickListener {
+        void onMealClick(Meal meal);
+    }
+
+    public interface OnFavoriteClickListener {
+        void onFavoriteClick(Meal meal, boolean isFavorite);
     }
 
     static class MealViewHolder extends RecyclerView.ViewHolder {
@@ -96,9 +95,7 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
         public void bind(Meal meal, boolean isFavorite, OnMealClickListener listener, OnFavoriteClickListener favoriteListener) {
             tvMealName.setText(meal.getStrMeal());
 
-            Glide.with(itemView.getContext())
-                    .load(meal.getStrMealThumb())
-                    .into(ivMealImage);
+            Glide.with(itemView.getContext()).load(meal.getStrMealThumb()).into(ivMealImage);
 
             if (isFavorite) {
                 ivFavorite.setImageResource(R.drawable.favorite);

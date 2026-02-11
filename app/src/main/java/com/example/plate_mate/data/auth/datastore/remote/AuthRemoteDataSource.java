@@ -17,33 +17,20 @@ public class AuthRemoteDataSource {
     }
 
     public Completable signIn(String email, String password) {
-        return Completable.create(emitter ->
-                firebaseAuth.signInWithEmailAndPassword(email, password)
-                        .addOnSuccessListener(authResult -> emitter.onComplete())
-                        .addOnFailureListener(emitter::onError)
-        );
+        return Completable.create(emitter -> firebaseAuth.signInWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> emitter.onComplete()).addOnFailureListener(emitter::onError));
     }
 
     public Completable signInWithGoogle(String idToken) {
         return Completable.create(emitter -> {
             AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-            firebaseAuth.signInWithCredential(credential)
-                    .addOnSuccessListener(authResult -> emitter.onComplete())
-                    .addOnFailureListener(emitter::onError);
+            firebaseAuth.signInWithCredential(credential).addOnSuccessListener(authResult -> emitter.onComplete()).addOnFailureListener(emitter::onError);
         });
     }
 
     public Completable signUp(String email, String password) {
-        return Completable.create(emitter ->
-                firebaseAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnSuccessListener(authResult -> emitter.onComplete())
-                        .addOnFailureListener(emitter::onError)
-        );
+        return Completable.create(emitter -> firebaseAuth.createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> emitter.onComplete()).addOnFailureListener(emitter::onError));
     }
 
-    /**
-     * Update user profile (display name, photo URL, etc.)
-     */
     public Completable updateUserProfile(String displayName, String photoUrl) {
         return Completable.create(emitter -> {
             FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -58,18 +45,13 @@ public class AuthRemoteDataSource {
                     profileUpdates.setPhotoUri(android.net.Uri.parse(photoUrl));
                 }
 
-                user.updateProfile(profileUpdates.build())
-                        .addOnSuccessListener(aVoid -> emitter.onComplete())
-                        .addOnFailureListener(emitter::onError);
+                user.updateProfile(profileUpdates.build()).addOnSuccessListener(aVoid -> emitter.onComplete()).addOnFailureListener(emitter::onError);
             } else {
                 emitter.onError(new Exception("No user logged in"));
             }
         });
     }
 
-    /**
-     * Update only display name
-     */
     public Completable updateDisplayName(String displayName) {
         return updateUserProfile(displayName, null);
     }

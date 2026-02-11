@@ -15,12 +15,15 @@ public class FavoriteLocalDataStore {
     public FavoriteLocalDataStore(Context context) {
         favoriteDao = MealsDatabase.getInstance(context).favoriteDao();
     }
+
     public void insertFavorite(Meal favorite) {
         favoriteDao.insertFavorite(favorite);
     }
+
     public Observable<List<Meal>> getAllFavorites() {
         return favoriteDao.getAllFavorites();
     }
+
     public Meal getFavoriteById(String mealId) {
         return favoriteDao.getFavoriteById(mealId);
     }

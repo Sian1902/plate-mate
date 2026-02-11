@@ -7,7 +7,7 @@ import com.example.plate_mate.presentation.onboarding.view.OnboardingView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OnboardingPresenterImp implements OnboardingPresenter{
+public class OnboardingPresenterImp implements OnboardingPresenter {
     private final OnboardingView view;
     private int currentPosition = 0;
     private List<OnboardingItem> items;

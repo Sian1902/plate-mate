@@ -17,24 +17,17 @@ public class AuthRepoImp implements AuthRepo {
 
     @Override
     public Completable login(String email, String password) {
-        return remoteDataSource.signIn(email, password)
-                .doOnComplete(() -> saveSessionLocally(false));
+        return remoteDataSource.signIn(email, password).doOnComplete(() -> saveSessionLocally(false));
     }
 
     @Override
     public Completable register(String name, String email, String password) {
-        // Step 1: Create user account
-        // Step 2: Update display name in Firebase
-        // Step 3: Save session locally
-        return remoteDataSource.signUp(email, password)
-                .andThen(remoteDataSource.updateDisplayName(name))
-                .doOnComplete(() -> saveSessionLocally(false));
+        return remoteDataSource.signUp(email, password).andThen(remoteDataSource.updateDisplayName(name)).doOnComplete(() -> saveSessionLocally(false));
     }
 
     @Override
     public Completable loginWithGoogle(String idToken) {
-        return remoteDataSource.signInWithGoogle(idToken)
-                .doOnComplete(() -> saveSessionLocally(false));
+        return remoteDataSource.signInWithGoogle(idToken).doOnComplete(() -> saveSessionLocally(false));
     }
 
     @Override
@@ -45,19 +38,11 @@ public class AuthRepoImp implements AuthRepo {
         });
     }
 
-    @Override
-    public Completable updateUserProfile(String displayName, String photoUrl) {
-        return remoteDataSource.updateUserProfile(displayName, photoUrl);
-    }
 
     private void saveSessionLocally(boolean isGuest) {
         FirebaseUser user = remoteDataSource.getCurrentUser();
         if (user != null) {
-            localDataSource.saveUserSession(
-                    user.getUid(),
-                    user.getEmail() != null ? user.getEmail() : "Guest User",
-                    isGuest
-            );
+            localDataSource.saveUserSession(user.getUid(), user.getEmail() != null ? user.getEmail() : "Guest User", isGuest);
         }
     }
 
@@ -66,15 +51,6 @@ public class AuthRepoImp implements AuthRepo {
         return localDataSource.isLoggedIn();
     }
 
-    @Override
-    public boolean isGuestMode() {
-        return localDataSource.isGuest();
-    }
-
-    @Override
-    public String getCurrentUserId() {
-        return localDataSource.getUserId();
-    }
 
     @Override
     public void setDarkMode(boolean isEnabled) {

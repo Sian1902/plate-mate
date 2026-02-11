@@ -27,44 +27,33 @@ public class SavedPresenterImp implements SavedPresenter {
 
     @Override
     public void loadFavorites() {
-        // Subscribe to favorites observable to get real-time updates
-        disposables.add(mealRepo.getAllFavorites()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(favorites -> {
-                    if (savedView == null) return;
+        disposables.add(mealRepo.getAllFavorites().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(favorites -> {
+            if (savedView == null) return;
+            favoriteMealIds.clear();
+            for (Meal meal : favorites) {
+                if (meal.getIdMeal() != null) {
+                    favoriteMealIds.add(meal.getIdMeal());
+                }
+            }
+            if (favorites.isEmpty()) {
+                savedView.showEmptyState();
+            } else {
+                savedView.hideEmptyState();
+                savedView.showFavorites(favorites);
+            }
 
-                    // Update favorite IDs set
-                    favoriteMealIds.clear();
-                    for (Meal meal : favorites) {
-                        if (meal.getIdMeal() != null) {
-                            favoriteMealIds.add(meal.getIdMeal());
-                        }
-                    }
+            savedView.updateFavorites(favoriteMealIds);
 
-                    // Show or hide empty state based on list
-                    if (favorites.isEmpty()) {
-                        savedView.showEmptyState();
-                    } else {
-                        savedView.hideEmptyState();
-                        savedView.showFavorites(favorites);
-                    }
-
-                    // Update favorite states in adapter
-                    savedView.updateFavorites(favoriteMealIds);
-
-                }, error -> {
-                    if (savedView != null) {
-                        savedView.showError("Failed to load favorites: " + error.getMessage());
-                    }
-                }));
+        }, error -> {
+            if (savedView != null) {
+                savedView.showError("Failed to load favorites: " + error.getMessage());
+            }
+        }));
     }
 
     @Override
     public void toggleFavorite(Meal meal) {
         if (meal == null || meal.getIdMeal() == null) return;
-
-        // Since this is the favorites screen, we only remove from favorites
         boolean isFavorite = favoriteMealIds.contains(meal.getIdMeal());
 
         if (isFavorite) {
@@ -73,17 +62,13 @@ public class SavedPresenterImp implements SavedPresenter {
     }
 
     private void removeFavorite(String mealId) {
-        disposables.add(mealRepo.deleteFavorite(mealId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
-                    // The observable will automatically update the UI
-                    // No need to manually update here as loadFavorites subscription handles it
-                }, error -> {
-                    if (savedView != null) {
-                        savedView.showError("Failed to remove from favorites: " + error.getMessage());
-                    }
-                }));
+        disposables.add(mealRepo.deleteFavorite(mealId).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+
+        }, error -> {
+            if (savedView != null) {
+                savedView.showError("Failed to remove from favorites: " + error.getMessage());
+            }
+        }));
     }
 
     @Override

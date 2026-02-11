@@ -30,28 +30,20 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MealSearchDialog extends Dialog {
 
+    private final MealRepository repository;
+    private final CompositeDisposable disposables = new CompositeDisposable();
+    private final Long selectedDate;
+    private final MealType selectedMealType;
+    private final OnMealAddedListener listener;
     private EditText searchEditText;
     private ImageButton clearSearchButton;
     private ProgressBar progressBar;
     private TextView emptySearchText;
     private RecyclerView searchResultsRecycler;
     private MaterialButton cancelButton;
-
     private MealSearchAdapter adapter;
-    private final MealRepository repository;
-    private final CompositeDisposable disposables = new CompositeDisposable();
 
-    private final Long selectedDate;
-    private final MealType selectedMealType;
-    private final OnMealAddedListener listener;
-
-    public interface OnMealAddedListener {
-        void onMealAdded();
-    }
-
-    public MealSearchDialog(@NonNull Context context, MealRepository repository,
-                            Long selectedDate, MealType selectedMealType,
-                            OnMealAddedListener listener) {
+    public MealSearchDialog(@NonNull Context context, MealRepository repository, Long selectedDate, MealType selectedMealType, OnMealAddedListener listener) {
         super(context);
         this.repository = repository;
         this.selectedDate = selectedDate;
@@ -91,7 +83,8 @@ public class MealSearchDialog extends Dialog {
     private void setupListeners() {
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -109,7 +102,8 @@ public class MealSearchDialog extends Dialog {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         clearSearchButton.setOnClickListener(v -> {
@@ -124,58 +118,34 @@ public class MealSearchDialog extends Dialog {
     private void searchMeals(String query) {
         showLoading();
 
-        disposables.add(
-                repository.SearchMealsByName(query)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                mealResponse -> {
-                                    hideLoading();
-                                    if (mealResponse.getMeals() != null && !mealResponse.getMeals().isEmpty()) {
-                                        showResults(mealResponse.getMeals());
-                                    } else {
-                                        showNoResults();
-                                    }
-                                },
-                                error -> {
-                                    hideLoading();
-                                    showError();
-                                }
-                        )
-        );
+        disposables.add(repository.SearchMealsByName(query).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(mealResponse -> {
+            hideLoading();
+            if (mealResponse.getMeals() != null && !mealResponse.getMeals().isEmpty()) {
+                showResults(mealResponse.getMeals());
+            } else {
+                showNoResults();
+            }
+        }, error -> {
+            hideLoading();
+            showError();
+        }));
     }
 
     private void addPlannedMeal(Meal meal) {
         showLoading();
 
-        com.example.plate_mate.data.meal.model.PlannedMeal plannedMeal =
-                new com.example.plate_mate.data.meal.model.PlannedMeal(
-                        selectedDate,
-                        selectedMealType,
-                        meal.getIdMeal(),
-                        meal,
-                        System.currentTimeMillis()
-                );
+        com.example.plate_mate.data.meal.model.PlannedMeal plannedMeal = new com.example.plate_mate.data.meal.model.PlannedMeal(selectedDate, selectedMealType, meal.getIdMeal(), meal, System.currentTimeMillis());
 
-        disposables.add(
-                repository.insertPlannedMeal(plannedMeal)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> {
-                                    hideLoading();
-                                    if (listener != null) {
-                                        listener.onMealAdded();
-                                    }
-                                    dismiss();
-                                },
-                                error -> {
-                                    hideLoading();
-                                    // Show error toast or message
-                                    showError();
-                                }
-                        )
-        );
+        disposables.add(repository.insertPlannedMeal(plannedMeal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+            hideLoading();
+            if (listener != null) {
+                listener.onMealAdded();
+            }
+            dismiss();
+        }, error -> {
+            hideLoading();
+            showError();
+        }));
     }
 
     private void showLoading() {
@@ -217,5 +187,9 @@ public class MealSearchDialog extends Dialog {
     protected void onStop() {
         super.onStop();
         disposables.clear();
+    }
+
+    public interface OnMealAddedListener {
+        void onMealAdded();
     }
 }

@@ -1,17 +1,20 @@
 package com.example.plate_mate.presentation.onboarding.view;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.plate_mate.R;
 
 import java.util.List;
+
 public class OnboardingAdapter extends RecyclerView.Adapter<OnboardingAdapter.OnboardingViewHolder> {
-    private List<OnboardingItem> onboardingItems;
+    private final List<OnboardingItem> onboardingItems;
 
     public OnboardingAdapter(List<OnboardingItem> onboardingItems) {
         this.onboardingItems = onboardingItems;
@@ -20,8 +23,7 @@ public class OnboardingAdapter extends RecyclerView.Adapter<OnboardingAdapter.On
     @NonNull
     @Override
     public OnboardingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_onboarding, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_onboarding, parent, false);
         return new OnboardingViewHolder(view);
     }
 

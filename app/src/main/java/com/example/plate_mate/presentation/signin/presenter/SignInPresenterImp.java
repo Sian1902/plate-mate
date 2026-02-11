@@ -17,17 +17,11 @@ public class SignInPresenterImp implements SignInPresenter {
 
     @Override
     public void login(String email, String password) {
-        repo.login(email, password)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onLoginSuccess, error -> view.onLoginError(error.getMessage()));
+        repo.login(email, password).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(view::onLoginSuccess, error -> view.onLoginError(error.getMessage()));
     }
 
     @Override
     public void loginWithGoogle(String idToken) {
-        repo.loginWithGoogle(idToken)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::onLoginSuccess, error -> view.onLoginError(error.getMessage()));
+        repo.loginWithGoogle(idToken).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(view::onLoginSuccess, error -> view.onLoginError(error.getMessage()));
     }
 }

@@ -17,19 +17,16 @@ import com.example.plate_mate.presentation.onboarding.presenter.OnboardingPresen
 import com.example.plate_mate.presentation.onboarding.presenter.OnboardingPresenterImp;
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
 
-public class OnboardingActivity extends AppCompatActivity implements OnboardingView{
+public class OnboardingActivity extends AppCompatActivity implements OnboardingView {
 
+    int currentPosition = 0;
     private ViewPager2 viewPager;
     private DotsIndicator dotsIndicator;
     private Button btnNext;
     private ImageButton btnBack;
     private TextView tvSkip;
-
     private OnboardingPresenter presenter;
     private OnboardingAdapter adapter;
-
-    int currentPosition = 0;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,13 +89,13 @@ public class OnboardingActivity extends AppCompatActivity implements OnboardingV
     }
 
     @Override
-    public void setCurrentPosition(int position) {
-        currentPosition = position;
+    public int getCurrentPosition() {
+        return viewPager.getCurrentItem();
     }
 
     @Override
-    public int getCurrentPosition() {
-        return viewPager.getCurrentItem();
+    public void setCurrentPosition(int position) {
+        currentPosition = position;
     }
 
     @Override
@@ -110,6 +107,7 @@ public class OnboardingActivity extends AppCompatActivity implements OnboardingV
     public void goToPreviousPage() {
         viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
     }
+
     @Override
     public void showBackButton() {
         if (btnBack != null) {

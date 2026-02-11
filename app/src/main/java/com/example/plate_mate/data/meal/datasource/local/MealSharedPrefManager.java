@@ -23,12 +23,8 @@ public class MealSharedPrefManager {
     private final Gson gson;
 
     private MealSharedPrefManager(Context context) {
-        sharedPreferences = context
-                .getApplicationContext()
-                .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        gson = new GsonBuilder()
-                .setLenient()
-                .create();
+        sharedPreferences = context.getApplicationContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        gson = new GsonBuilder().setLenient().create();
     }
 
     public static MealSharedPrefManager getInstance(Context context) {
@@ -56,14 +52,11 @@ public class MealSharedPrefManager {
                 String json = gson.toJson(data);
                 Log.d(TAG, "JSON length: " + json.length() + " characters");
 
-                boolean success = sharedPreferences.edit()
-                        .putString(INITIAL_DATA_KEY, json)
-                        .commit(); // Changed from apply() to commit()
+                boolean success = sharedPreferences.edit().putString(INITIAL_DATA_KEY, json).commit();
 
                 if (success) {
                     Log.d(TAG, "Initial data saved successfully");
 
-                    // Verify the save
                     String savedJson = sharedPreferences.getString(INITIAL_DATA_KEY, null);
                     if (savedJson != null && savedJson.length() > 0) {
                         Log.d(TAG, "Verification: Data exists in SharedPreferences, length: " + savedJson.length());
@@ -118,22 +111,13 @@ public class MealSharedPrefManager {
             return;
         }
 
-        int categoriesCount = (data.getCategories() != null && data.getCategories().getMeal() != null)
-                ? data.getCategories().getMeal().size() : 0;
-        int areasCount = (data.getAreas() != null && data.getAreas().getMeals() != null)
-                ? data.getAreas().getMeals().size() : 0;
-        int ingredientsCount = (data.getIngredients() != null && data.getIngredients().getMeals() != null)
-                ? data.getIngredients().getMeals().size() : 0;
-        int mealsCount = (data.getMeals() != null && data.getMeals().getMeals() != null)
-                ? data.getMeals().getMeals().size() : 0;
-        int randomMealCount = (data.getRandomMeal() != null && data.getRandomMeal().getMeals() != null)
-                ? data.getRandomMeal().getMeals().size() : 0;
+        int categoriesCount = (data.getCategories() != null && data.getCategories().getMeal() != null) ? data.getCategories().getMeal().size() : 0;
+        int areasCount = (data.getAreas() != null && data.getAreas().getMeals() != null) ? data.getAreas().getMeals().size() : 0;
+        int ingredientsCount = (data.getIngredients() != null && data.getIngredients().getMeals() != null) ? data.getIngredients().getMeals().size() : 0;
+        int mealsCount = (data.getMeals() != null && data.getMeals().getMeals() != null) ? data.getMeals().getMeals().size() : 0;
+        int randomMealCount = (data.getRandomMeal() != null && data.getRandomMeal().getMeals() != null) ? data.getRandomMeal().getMeals().size() : 0;
 
-        Log.d(TAG, "Data summary - Categories: " + categoriesCount +
-                ", Areas: " + areasCount +
-                ", Ingredients: " + ingredientsCount +
-                ", Meals: " + mealsCount +
-                ", Random Meals: " + randomMealCount);
+        Log.d(TAG, "Data summary - Categories: " + categoriesCount + ", Areas: " + areasCount + ", Ingredients: " + ingredientsCount + ", Meals: " + mealsCount + ", Random Meals: " + randomMealCount);
     }
 
 

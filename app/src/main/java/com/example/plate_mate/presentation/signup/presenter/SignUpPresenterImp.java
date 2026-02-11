@@ -9,8 +9,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class SignUpPresenterImp implements SignUpPresenter {
     private final AuthRepo repo;
-    private SignUpView view;
     private final CompositeDisposable disposables = new CompositeDisposable();
+    private SignUpView view;
 
     public SignUpPresenterImp(AuthRepo repo, SignUpView view) {
         this.repo = repo;
@@ -19,7 +19,6 @@ public class SignUpPresenterImp implements SignUpPresenter {
 
     @Override
     public void register(String name, String email, String password) {
-        // Validate inputs
         if (name == null || name.trim().isEmpty()) {
             if (view != null) {
                 view.onRegistrationError("Name is required");
@@ -52,25 +51,17 @@ public class SignUpPresenterImp implements SignUpPresenter {
             view.setLoading(true);
         }
 
-        disposables.add(
-                repo.register(name.trim(), email.trim(), password.trim())
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(
-                                () -> {
-                                    if (view != null) {
-                                        view.setLoading(false);
-                                        view.onRegistrationSuccess();
-                                    }
-                                },
-                                error -> {
-                                    if (view != null) {
-                                        view.setLoading(false);
-                                        view.onRegistrationError(error.getMessage());
-                                    }
-                                }
-                        )
-        );
+        disposables.add(repo.register(name.trim(), email.trim(), password.trim()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+            if (view != null) {
+                view.setLoading(false);
+                view.onRegistrationSuccess();
+            }
+        }, error -> {
+            if (view != null) {
+                view.setLoading(false);
+                view.onRegistrationError(error.getMessage());
+            }
+        }));
     }
 
     @Override

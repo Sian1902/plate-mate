@@ -30,10 +30,6 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
     private NavVisibilityCallback navVisibilityCallback;
     private MealDetailsPresenter presenter;
 
-    public interface NavVisibilityCallback {
-        void setNavigationVisibility(boolean isVisible);
-    }
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -68,7 +64,6 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
         if (getArguments() != null) {
             Meal meal = (Meal) getArguments().getSerializable("selected_meal");
             if (meal != null) {
-                // Check if the meal object already contains detailed data
                 if (hasFullData(meal)) {
                     showMealDetails(meal);
                 } else {
@@ -78,10 +73,6 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
         }
     }
 
-    /**
-     * Checks if the meal object already has instructions and ingredients.
-     * This prevents redundant API calls for meals coming from search or random results.
-     */
     private boolean hasFullData(Meal meal) {
         String instructions = meal.getStrInstructions();
         String firstIngredient = meal.getStrIngredient(1); // Using the specific getter if available, or getStrIngredient(1)
@@ -132,7 +123,8 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
 
     private String extractVideoId(String youtubeUrl) {
         if (youtubeUrl.contains("v=")) return youtubeUrl.split("v=")[1].split("&")[0];
-        if (youtubeUrl.contains("youtu.be/")) return youtubeUrl.split("youtu.be/")[1].split("\\?")[0];
+        if (youtubeUrl.contains("youtu.be/"))
+            return youtubeUrl.split("youtu.be/")[1].split("\\?")[0];
         return null;
     }
 
@@ -152,5 +144,9 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView {
     public void onDestroyView() {
         super.onDestroyView();
         presenter.detachView();
+    }
+
+    public interface NavVisibilityCallback {
+        void setNavigationVisibility(boolean isVisible);
     }
 }
