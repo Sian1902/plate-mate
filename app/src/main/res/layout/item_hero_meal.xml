@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Meal Image -->
         <ImageView
             android:id="@+id/ivHeroMealImage"
             android:layout_width="match_parent"
@@ -22,15 +21,11 @@
             android:contentDescription="@string/cd_meal_image"
             android:scaleType="centerCrop"
             tools:src="@tools:sample/backgrounds/scenic" />
-
-        <!-- Meal Info Container -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="@dimen/spacing_lg">
-
-            <!-- Badge -->
             <TextView
                 android:id="@+id/tvHeroBadge"
                 android:layout_width="wrap_content"
@@ -45,8 +40,6 @@
                 android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 android:letterSpacing="0.05" />
-
-            <!-- Meal Title -->
             <TextView
                 android:id="@+id/tvHeroMealTitle"
                 android:layout_width="match_parent"

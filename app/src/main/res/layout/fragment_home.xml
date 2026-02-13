@@ -19,7 +19,6 @@
             android:id="@+id/layoutHeroMeal"
             layout="@layout/item_hero_meal" />
 
-        <!-- Search Bar Section -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -13,7 +13,7 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 
 public interface MealRepository {
-    Observable<InitialMealData> preloadInitialData();
+    Completable preloadInitialData();
 
     Single<InitialMealData> getCachedSplashData();
 
@@ -36,20 +36,11 @@ public interface MealRepository {
 
     Completable insertPlannedMeal(PlannedMeal plannedMeal);
 
-    Completable insertPlannedMeals(List<PlannedMeal> plannedMeals);
-
-    Completable updatePlannedMeal(PlannedMeal plannedMeal);
-
-
-    Completable deletePlannedMealByDateAndType(Long date, MealType mealType);
 
     Observable<List<PlannedMeal>> getPlannedMealsForNextSevenDays();
 
     Single<List<PlannedMeal>> getPlannedMealsByDate(Long date);
 
-    Single<PlannedMeal> getPlannedMealByDateAndType(Long date, MealType mealType);
-
-    Single<Boolean> isPlannedMealExists(Long date, MealType mealType);
 
     Observable<List<PlannedMeal>> getAllPlannedMeals();
 
@@ -57,6 +48,5 @@ public interface MealRepository {
 
     Completable deleteAllPlannedMeals();
 
-    Single<Integer> getPlannedMealsCount();
 
 }

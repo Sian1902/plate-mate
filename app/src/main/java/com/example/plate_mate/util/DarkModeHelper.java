@@ -9,10 +9,6 @@ import com.example.plate_mate.data.auth.datastore.remote.AuthRemoteDataSource;
 import com.example.plate_mate.data.auth.repo.AuthRepo;
 import com.example.plate_mate.data.auth.repo.AuthRepoImp;
 
-/**
- * Utility class to manage dark mode across the application
- * Uses AuthRepo for proper layering
- */
 public class DarkModeHelper {
 
     public static void applyDarkMode(Context context) {
@@ -25,21 +21,7 @@ public class DarkModeHelper {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
-    public static void toggleDarkMode(Context context, boolean isEnabled) {
-        AuthRepo authRepo = getAuthRepo(context);
 
-        authRepo.setDarkMode(isEnabled);
-        if (isEnabled) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        }
-    }
-
-    public static boolean isDarkModeEnabled(Context context) {
-        AuthRepo authRepo = getAuthRepo(context);
-        return authRepo.isDarkModeEnabled();
-    }
     private static AuthRepo getAuthRepo(Context context) {
         AuthRemoteDataSource remoteDataSource = new AuthRemoteDataSource();
         AuthPrefManager prefManager = AuthPrefManager.getInstance(context);

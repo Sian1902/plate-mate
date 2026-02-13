@@ -27,7 +27,10 @@ import com.example.plate_mate.presentation.splash.presenter.SplashPresenter;
 import com.example.plate_mate.presentation.splash.presenter.SplashPresenterImp;
 import com.example.plate_mate.util.DarkModeHelper;
 
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -89,124 +92,54 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void goToOnboarding() {
-        Log.d(TAG, "Starting data preload for onboarding...");
-
-        splashDisposable = splashPresenter.preloadData().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(data -> {
-            Log.d(TAG, "Preload completed successfully for onboarding");
-            logDataInfo(data);
-
-            long elapsed = System.currentTimeMillis() - startTime;
-            long delay = Math.max(0, MIN_SPLASH_DURATION_MS - elapsed);
-
-            new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
-                startActivity(new Intent(SplashActivity.this, OnboardingActivity.class));
-                finish();
-            }, delay);
-        }, error -> {
-            Log.e(TAG, "Preload failed during onboarding", error);
-
-            long elapsed = System.currentTimeMillis() - startTime;
-            long delay = Math.max(0, MIN_SPLASH_DURATION_MS - elapsed);
-
-            new android.os.Handler(Looper.getMainLooper()).postDelayed(() -> {
-                startActivity(new Intent(SplashActivity.this, OnboardingActivity.class));
-                finish();
-            }, delay);
-        });
+        Log.d(TAG, "Onboarding not completed, preloading data...");
+        preloadDataAndNavigate(OnboardingActivity.class);
     }
 
     private void preloadDataAndNavigateToMain() {
-        Log.d(TAG, "Starting to preload data for logged-in user...");
-
-        splashDisposable = splashPresenter.preloadData().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onDataLoadedAndGoToMain, this::onDataLoadErrorAndGoToMain);
+        Log.d(TAG, "User logged in, preloading data for main...");
+        preloadDataAndNavigate(MainActivity.class);
     }
 
     private void preloadDataAndNavigateToAuth() {
-        Log.d(TAG, "Starting to preload data for new user...");
-
-        splashDisposable = splashPresenter.preloadData().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onDataLoaded, this::onDataLoadError);
+        Log.d(TAG, "New user, preloading data for auth...");
+        preloadDataAndNavigate(AuthActivity.class);
     }
 
-    private void onDataLoadedAndGoToMain(InitialMealData data) {
-        Log.d(TAG, "Data loaded successfully for logged-in user!");
-        logDataInfo(data);
-        goToMain();
+    private void preloadDataAndNavigate(Class<?> targetActivity) {
+        splashDisposable = splashPresenter.preloadData()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .andThen(splashDelay().ignoreElements())
+                .subscribe(
+                        () -> {
+                            navigateTo(targetActivity);
+                        },
+                        error -> {
+                            Log.e(TAG, "Critical failure during preload", error);
+                            navigateTo(targetActivity);
+                        }
+                );
+    }
+    private Observable<Long> splashDelay() {
+        long elapsed = System.currentTimeMillis() - startTime;
+        long remaining = Math.max(0, MIN_SPLASH_DURATION_MS - elapsed);
+        return Observable.timer(remaining, TimeUnit.MILLISECONDS);
     }
 
-    private void onDataLoadErrorAndGoToMain(Throwable error) {
-        Log.e(TAG, "Error loading data for logged-in user: " + error.getMessage(), error);
-        goToMain();
+    private void navigateTo(Class<?> targetActivity) {
+        Intent intent = new Intent(SplashActivity.this, targetActivity);
+        startActivity(intent);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+        finish();
     }
 
-    private void onDataLoaded(InitialMealData data) {
-        Log.d(TAG, "Data loaded successfully!");
-        logDataInfo(data);
-        goToAuth();
-    }
-
-    private void onDataLoadError(Throwable error) {
-        Log.e(TAG, "Error loading data: " + error.getMessage(), error);
-        goToAuth();
-    }
-
-    private void logDataInfo(InitialMealData data) {
-        if (data == null) {
-            Log.w(TAG, "Data is null");
-            return;
-        }
-
-        if (data.getCategories() != null && data.getCategories().getMeal() != null) {
-            Log.d(TAG, "Categories count: " + data.getCategories().getMeal().size());
-            data.getCategories().getMeal().forEach(category -> Log.d(TAG, "Category: " + category.getStrCategory()));
-        } else {
-            Log.w(TAG, "Categories data is null");
-        }
-
-        if (data.getIngredients() != null && data.getIngredients().getMeals() != null) {
-            Log.d(TAG, "Ingredients count: " + data.getIngredients().getMeals().size());
-            data.getIngredients().getMeals().forEach(ingredient -> Log.d(TAG, "Ingredient: " + ingredient.getStrIngredient()));
-        } else {
-            Log.w(TAG, "Ingredients data is null");
-        }
-
-        if (data.getAreas() != null && data.getAreas().getMeals() != null) {
-            Log.d(TAG, "Areas count: " + data.getAreas().getMeals().size());
-            data.getAreas().getMeals().forEach(area -> Log.d(TAG, "Area: " + area.getStrArea()));
-        } else {
-            Log.w(TAG, "Areas data is null");
-        }
-
-        if (data.getMeals() != null && data.getMeals().getMeals() != null) {
-            Log.d(TAG, "Meals count: " + data.getMeals().getMeals().size());
-            data.getMeals().getMeals().forEach(meal -> Log.d(TAG, "Meal: " + meal.getStrMeal()));
-        } else {
-            Log.w(TAG, "Meals data is null");
-        }
-
-        if (data.getRandomMeal() != null && data.getRandomMeal().getMeals() != null) {
-            Log.d(TAG, "Random meal count: " + data.getRandomMeal().getMeals().size());
-        } else {
-            Log.w(TAG, "Random meal data is null");
-        }
-    }
 
     private void setupAnimation(LottieAnimationView anim, int brandColor) {
         anim.addValueCallback(new KeyPath("**"), LottieProperty.COLOR_FILTER, frameInfo -> new PorterDuffColorFilter(brandColor, PorterDuff.Mode.SRC_ATOP));
     }
 
-    private void goToMain() {
-        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-        startActivity(intent);
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        finish();
-    }
 
-    private void goToAuth() {
-        Intent intent = new Intent(SplashActivity.this, AuthActivity.class);
-        startActivity(intent);
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        finish();
-    }
 
     @Override
     protected void onDestroy() {

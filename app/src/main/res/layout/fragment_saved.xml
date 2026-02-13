@@ -7,7 +7,6 @@
     tools:context=".presentation.saved.view.SavedFragment"
     android:background="@color/background">
 
-    <!-- RecyclerView for Favorites -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFavorites"
         android:layout_width="match_parent"
@@ -16,7 +15,6 @@
         android:paddingTop="16dp"
         android:paddingBottom="16dp"/>
 
-    <!-- Empty State -->
     <LinearLayout
         android:id="@+id/layoutEmptyState"
         android:layout_width="wrap_content"

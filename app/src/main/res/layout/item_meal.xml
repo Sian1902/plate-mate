@@ -19,7 +19,6 @@
         android:minHeight="@dimen/list_item_min_height"
         android:padding="@dimen/spacing_md">
 
-        <!-- Meal Thumbnail -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivMealThumbnail"
             android:layout_width="@dimen/meal_thumbnail_size"
@@ -31,8 +30,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.MediumComponent"
             tools:src="@tools:sample/backgrounds/scenic" />
-
-        <!-- Content Container -->
         <LinearLayout
             android:id="@+id/layoutContent"
             android:layout_width="0dp"
@@ -45,7 +42,6 @@
             app:layout_constraintStart_toEndOf="@id/ivMealThumbnail"
             app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Meal Title -->
             <TextView
                 android:id="@+id/tvMealTitle"
                 android:layout_width="match_parent"
@@ -56,8 +52,6 @@
                 android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 tools:text="Japanese Ramen" />
-
-            <!-- Details -->
             <TextView
                 android:id="@+id/tvMealSubtitle"
                 android:layout_width="match_parent"
@@ -69,8 +63,6 @@
                 android:textColor="@color/text_tertiary"
                 android:textSize="13sp"
                 tools:text="30 mins • 600 kcal • Intermediate" />
-
-            <!-- Tags Container -->
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupTags"
                 android:layout_width="match_parent"
@@ -78,12 +70,8 @@
                 android:layout_marginTop="6dp"
                 app:chipSpacingHorizontal="4dp"
                 app:singleLine="true">
-
-                <!-- Tags will be added dynamically -->
             </com.google.android.material.chip.ChipGroup>
         </LinearLayout>
-
-        <!-- Favorite Icon -->
         <ImageView
             android:id="@+id/ivFavorite"
             android:layout_width="48dp"

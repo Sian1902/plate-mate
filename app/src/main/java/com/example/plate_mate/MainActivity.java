@@ -6,6 +6,7 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements MealDetailsFragment.NavVisibilityCallback {
@@ -57,8 +59,6 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
         authRemoteDataSource = new AuthRemoteDataSource();
         firebaseSyncDataSource = new FirebaseSyncDataSource();
         mealRepository = MealRepoImp.getInstance(this);
-
-        // Initialize network monitoring
         setupNetworkMonitoring();
 
         checkUserAndDownloadData();
@@ -121,8 +121,6 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
                 .build();
 
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
-
-        // Check initial connectivity state
         checkInitialConnectivity();
     }
 
@@ -151,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
 
     private void showNoConnectionDialog() {
         if (noConnectionDialog != null && noConnectionDialog.isShowing()) {
-            return; // Dialog already showing
+            return;
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -159,9 +157,6 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
                 .setMessage("Please check your internet connection and try again.")
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setCancelable(false)
-                .setPositiveButton("Retry", (dialog, which) -> {
-                    checkInitialConnectivity();
-                })
                 .setNegativeButton("Close", (dialog, which) -> {
                     dialog.dismiss();
                 });
@@ -179,7 +174,6 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
     private void checkUserAndDownloadData() {
         FirebaseUser user = authRemoteDataSource.getCurrentUser();
         if (user != null) {
-            // User is signed in, download their data from Firebase
             downloadUserData(user.getUid());
         }
     }
@@ -194,21 +188,21 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         counts -> {
-                            // Data downloaded successfully
-                            // You could show a notification or log this
+                            int favs = counts[0];
+                            int planned = counts[1];
+                            Log.d("MainActivity", "Sync Complete: " + favs + " favorites and " + planned + " planned meals downloaded.");
                         },
                         error -> {
-                            // Handle download error
-                            // You might want to retry or just ignore for now
+                            Log.e("MainActivity", "Sync failed: " + error.getMessage());
                         }
                 );
     }
 
-    private io.reactivex.rxjava3.core.Single<Integer> downloadFavorites(String userId) {
+    private Single<Integer> downloadFavorites(String userId) {
         return firebaseSyncDataSource.fetchUserFavorites(userId)
                 .flatMap(firebaseFavorites -> {
                     if (firebaseFavorites.isEmpty()) {
-                        return io.reactivex.rxjava3.core.Single.just(0);
+                        return Single.just(0);
                     }
 
                     return Observable.fromIterable(firebaseFavorites)
@@ -221,18 +215,18 @@ public class MainActivity extends AppCompatActivity implements MealDetailsFragme
                                                             .toSingleDefault(1)
                                                             .onErrorReturnItem(0);
                                                 }
-                                                return io.reactivex.rxjava3.core.Single.just(0);
+                                                return Single.just(0);
                                             })
                             )
                             .reduce(0, Integer::sum);
                 });
     }
 
-    private io.reactivex.rxjava3.core.Single<Integer> downloadPlannedMeals(String userId) {
+    private Single<Integer> downloadPlannedMeals(String userId) {
         return firebaseSyncDataSource.fetchUserPlannedMeals(userId)
                 .flatMap(firebasePlannedMeals -> {
                     if (firebasePlannedMeals.isEmpty()) {
-                        return io.reactivex.rxjava3.core.Single.just(0);
+                        return Single.just(0);
                     }
 
                     return Observable.fromIterable(firebasePlannedMeals)

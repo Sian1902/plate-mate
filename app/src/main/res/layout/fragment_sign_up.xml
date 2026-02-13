@@ -174,8 +174,6 @@
             app:backgroundTint="@color/primary"
             app:cornerRadius="@dimen/corner_radius_md"
             app:layout_constraintTop_toBottomOf="@id/confirmPasswordLayout" />
-
-        <!-- Continue as Guest Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnContinueAsGuest"
             android:layout_width="match_parent"
