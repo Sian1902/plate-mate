@@ -613,96 +613,111 @@ classDiagram
 
 ## 18. UML - Local Data Sources
 
-```mermaid
-classDiagram
+```mermaidclassDiagram
     class MealsDatabase {
         <<abstract>>
         +favoriteDao() FavoriteDao
         +plannedMealDao() PlannedMealDao
     }
-    
+
     class FavoriteDao {
         <<interface>>
-        +insertFavorite(Meal)
-        +getAllFavorites()
-        +deleteFavorite(String)
+        +insertFavorite(meal: Meal) : void
+        +getAllFavorites() : List~Meal~
+        +deleteFavorite(mealId: String) : void
+        +deleteAllFavorites() : void
     }
-    
+
     class PlannedMealDao {
         <<interface>>
-        +insertPlannedMeal(PlannedMeal)
-        +getPlannedMealsInRange(Long, Long)
-        +deleteOldPlannedMeals(Long)
+        +insertPlannedMeal(plannedMeal: PlannedMeal) : void
+        +getPlannedMealsInRange(start: Long, end: Long) : List~PlannedMeal~
+        +deletePlannedMeal(id: String) : void
+        +deleteOldPlannedMeals(before: Long) : void
     }
-    
-    class FavoriteLocalDataStore {
-        -FavoriteDao favoriteDao
+
+    class FavoriteLocalDataSource {
+        -favoriteDao: FavoriteDao
+        +insertFavorite(meal: Meal)
+        +getAllFavorites()
+        +deleteFavorite(mealId: String)
     }
-    
-    class PlannedMealLocalDataStore {
-        -PlannedMealDao plannedMealDao
+
+    class PlannedMealLocalDataSource {
+        -plannedMealDao: PlannedMealDao
+        +insertPlannedMeal(plannedMeal: PlannedMeal)
+        +getPlannedMealsInRange(start: Long, end: Long)
+        +deleteOldPlannedMeals(before: Long)
     }
-    
+
     class MealSharedPrefManager {
-        -SharedPreferences sharedPreferences
-        +saveInitialData(InitialMealData)
-        +getCachedInitialData()
+        -sharedPreferences: SharedPreferences
+        +saveInitialData(data: InitialMealData)
+        +getCachedInitialData() : InitialMealData
+        +clearInitialData()
     }
-    
+
     class AuthPrefManager {
-        -SharedPreferences sharedPreferences
-        +saveUserSession(...)
-        +isLoggedIn() boolean
+        -sharedPreferences: SharedPreferences
+        +saveUserSession(userId: String, token: String)
+        +getUserId() : String
+        +isLoggedIn() : boolean
+        +clearSession()
     }
-    
+
     MealsDatabase --> FavoriteDao
     MealsDatabase --> PlannedMealDao
-    FavoriteLocalDataStore --> FavoriteDao
-    PlannedMealLocalDataStore --> PlannedMealDao
+    FavoriteLocalDataSource --> FavoriteDao
+    PlannedMealLocalDataSource --> PlannedMealDao
+
 ```
 
 ## 19. UML - Remote Data Sources
 
-```mermaid
-classDiagram
+```mermaidclassDiagram
     class MealRemoteDataSource {
-        -MealService mealService
-        +listCategories()
-        +filterByCategory(String)
-        +searchMealByName(String)
-        +getMealById(String)
+        -mealService: MealService
+        +listCategories() : Single~CategoryResponse~
+        +filterByCategory(category: String) : Single~MealResponse~
+        +searchMealByName(name: String) : Single~MealResponse~
+        +getMealById(id: String) : Single~MealDetailsResponse~
+        +getRandomMeal() : Single~MealDetailsResponse~
     }
-    
+
     class MealService {
         <<interface>>
         +listCategories()
-        +searchByCategory(String)
-        +getMealById(String)
+        +searchByCategory(category: String)
+        +searchByName(name: String)
+        +getMealById(id: String)
         +getRandomMeal()
     }
-    
+
     class RetrofitClient {
-        +getMealApiService() MealService
+        +getMealApiService() : MealService
     }
-    
+
     class AuthRemoteDataSource {
-        -FirebaseAuth firebaseAuth
-        +signIn(String, String)
-        +signUp(String, String)
+        -firebaseAuth: FirebaseAuth
+        +signIn(email: String, password: String)
+        +signUp(email: String, password: String)
         +logout()
-        +getCurrentUser()
+        +getCurrentUser() : FirebaseUser
     }
-    
+
     class FirebaseSyncDataSource {
-        -FirebaseFirestore firestore
-        +fetchUserFavorites(String)
-        +uploadFavorites(List, String)
-        +fetchUserPlannedMeals(String)
-        +uploadPlannedMeals(List, String)
+        -firestore: FirebaseFirestore
+        +fetchUserFavorites(userId: String)
+        +uploadFavorites(favorites: List~Meal~, userId: String)
+        +fetchUserPlannedMeals(userId: String)
+        +uploadPlannedMeals(plannedMeals: List~PlannedMeal~, userId: String)
     }
-    
+
     MealRemoteDataSource --> MealService
     RetrofitClient --> MealService
+    AuthRemoteDataSource --> FirebaseAuth
+    FirebaseSyncDataSource --> FirebaseFirestore
+
 ```
 
 ## 20. Data Flow - Add Favorite
