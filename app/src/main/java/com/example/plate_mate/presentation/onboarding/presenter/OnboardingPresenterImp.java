@@ -23,7 +23,7 @@ public class OnboardingPresenterImp implements OnboardingPresenter {
         items.add(new OnboardingItem(R.drawable.onboarding_page2, R.string.onboarding_page2_title1, R.string.onboarding_page_2_title2, R.string.onboarding_page_2_description));
 
         view.setCurrentPosition(0);
-        onPageSelected(0); // initial state
+        onPageSelected(0);
     }
 
     @Override

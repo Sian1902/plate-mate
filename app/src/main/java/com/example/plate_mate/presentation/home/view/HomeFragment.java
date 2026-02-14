@@ -28,6 +28,7 @@ import com.example.plate_mate.data.meal.model.Ingredient;
 import com.example.plate_mate.data.meal.model.Meal;
 import com.example.plate_mate.presentation.home.presenter.HomePresenter;
 import com.example.plate_mate.presentation.home.presenter.HomePresenterImp;
+import com.google.android.material.chip.Chip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +122,7 @@ public class HomeFragment extends Fragment implements HomeView {
         chipIngredients.setOnClickListener(v -> showFilterDialog("Ingredient", ingredients.stream().map(Ingredient::getStrIngredient).toArray(String[]::new), (name) -> homePresenter.filterMeals(null, null, name), chipIngredients));
     }
 
-    private void showFilterDialog(String title, String[] items, FilterAction action, com.google.android.material.chip.Chip chip) {
+    private void showFilterDialog(String title, String[] items, FilterAction action, Chip chip) {
         if (items.length == 0) {
             Toast.makeText(getContext(), "No " + title.toLowerCase() + " data available offline", Toast.LENGTH_SHORT).show();
             return;

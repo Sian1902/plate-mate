@@ -60,10 +60,6 @@ public class AuthRemoteDataSource {
         firebaseAuth.signOut();
     }
 
-    public Single<Boolean> isUserLoggedIn() {
-        return Single.just(firebaseAuth.getCurrentUser() != null);
-    }
-
     public FirebaseUser getCurrentUser() {
         return firebaseAuth.getCurrentUser();
     }

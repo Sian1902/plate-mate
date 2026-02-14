@@ -46,27 +46,6 @@ public class PlannedMealLocalDataStore {
         plannedMealDao.insertPlannedMeal(plannedMeal);
     }
 
-    public void insertPlannedMeals(List<PlannedMeal> plannedMeals) {
-        for (PlannedMeal meal : plannedMeals) {
-            validateDateWithinSevenDays(meal.getDate());
-            meal.setCreatedAt(System.currentTimeMillis());
-        }
-        plannedMealDao.insertPlannedMeals(plannedMeals);
-    }
-
-    public void updatePlannedMeal(PlannedMeal plannedMeal) {
-        validateDateWithinSevenDays(plannedMeal.getDate());
-        plannedMealDao.updatePlannedMeal(plannedMeal);
-    }
-
-    public void deletePlannedMeal(PlannedMeal plannedMeal) {
-        plannedMealDao.deletePlannedMeal(plannedMeal);
-    }
-
-    public void deletePlannedMealByDateAndType(Long date, MealType mealType) {
-        plannedMealDao.deletePlannedMealByDateAndType(date, mealType);
-    }
-
     public Observable<List<PlannedMeal>> getPlannedMealsForNextSevenDays() {
         long[] dateRange = getSevenDayRange();
         return plannedMealDao.getPlannedMealsInRange(dateRange[0], dateRange[1]);
@@ -75,15 +54,6 @@ public class PlannedMealLocalDataStore {
     public Single<List<PlannedMeal>> getPlannedMealsByDate(Long date) {
         return plannedMealDao.getPlannedMealsByDate(date);
     }
-
-    public Single<PlannedMeal> getPlannedMealByDateAndType(Long date, MealType mealType) {
-        return plannedMealDao.getPlannedMealByDateAndType(date, mealType);
-    }
-
-    public Single<Boolean> isPlannedMealExists(Long date, MealType mealType) {
-        return plannedMealDao.isPlannedMealExists(date, mealType);
-    }
-
     public Observable<List<PlannedMeal>> getAllPlannedMeals() {
         return plannedMealDao.getAllPlannedMeals();
     }
@@ -97,15 +67,6 @@ public class PlannedMealLocalDataStore {
         plannedMealDao.deleteAllPlannedMeals();
     }
 
-    public Single<Integer> getPlannedMealsCount() {
-        long[] dateRange = getSevenDayRange();
-        return plannedMealDao.getPlannedMealsCount(dateRange[0], dateRange[1]);
-    }
-
-    public Observable<List<PlannedMeal>> getPlannedMealsByType(MealType mealType) {
-        long startDate = getStartOfDay(System.currentTimeMillis());
-        return plannedMealDao.getPlannedMealsByType(mealType, startDate);
-    }
 
     private void validateDateWithinSevenDays(Long timestamp) {
         long[] range = getSevenDayRange();
